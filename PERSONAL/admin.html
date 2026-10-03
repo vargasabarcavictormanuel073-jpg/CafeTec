@@ -47,6 +47,30 @@
       <div id="r-top"><p class="vacio">Sin datos para este día.</p></div>
     </div>
 
+    <!-- ===== CUENTAS Y VERIFICACION ===== -->
+    <p class="seccion">Cuentas registradas</p>
+    <div class="card">
+      <div class="cuentas-resumen">
+        <div><strong id="u-total">0</strong><span>Total</span></div>
+        <div><strong id="u-pendientes">0</strong><span>Por revisar</span></div>
+        <div><strong id="u-bloqueados">0</strong><span>Bloqueadas</span></div>
+      </div>
+      <div class="cuentas-filtros">
+        <input type="search" id="u-buscar" placeholder="Buscar por nombre, correo o matrícula" />
+        <select id="u-filtro">
+          <option value="todos">Todas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobada">Aprobadas</option>
+          <option value="rechazada">Rechazadas</option>
+          <option value="bloqueada">Bloqueadas</option>
+          <option value="personal">Personal</option>
+        </select>
+        <button class="boton" id="btn-recargar-usuarios">Actualizar</button>
+      </div>
+      <div id="aviso-usuarios"></div>
+      <div id="lista-usuarios"><p class="vacio">Cargando cuentas…</p></div>
+    </div>
+
     <!-- ===== HORARIO DE ATENCIÓN ===== -->
     <p class="seccion">Horario de atención</p>
     <div class="card">
@@ -135,6 +159,17 @@
       <div id="lista-franjas"><p class="vacio">Cargando…</p></div>
     </div>
   </div>
+
+  <dialog id="modal-credencial" class="modal-credencial">
+    <div class="modal-cabecera">
+      <div>
+        <strong id="credencial-alumno">Credencial estudiantil</strong>
+        <div id="credencial-datos"></div>
+      </div>
+      <button id="btn-cerrar-credencial" aria-label="Cerrar">✕</button>
+    </div>
+    <img id="credencial-imagen" alt="Credencial estudiantil enviada" />
+  </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="comun.js"></script>

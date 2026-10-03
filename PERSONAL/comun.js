@@ -5,8 +5,8 @@
 // =====================================================================
 
 // --- Tus datos de Supabase (los MISMOS de siempre) -------------------
-const SUPABASE_URL  = "https://wnsagtdoqfdxuqgyjeyo.supabase.co";
-const SUPABASE_ANON = "sb_publishable_tFi6dNz6vl39FTTLbsevQQ_459aaN0J";
+const SUPABASE_URL  = "https://ugywwfycjoomhejlybej.supabase.co";
+const SUPABASE_ANON = "sb_publishable_NPjntBspgmP-HVPeqo8EuA_21nB5Sux";
 
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);

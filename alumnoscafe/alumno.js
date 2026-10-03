@@ -7,7 +7,15 @@
 // =====================================================================
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-const HOY = new Date().toISOString().slice(0, 10);
+
+function fechaLocalISO(fecha = new Date()) {
+  const y = fecha.getFullYear();
+  const m = String(fecha.getMonth() + 1).padStart(2, '0');
+  const d = String(fecha.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+const HOY = fechaLocalISO();
 
 // Estado en memoria mientras el alumno arma su pedido.
 let usuario      = null;   // el usuario logueado
@@ -16,16 +24,28 @@ let carrito      = {};     // { platillo_id: { nombre, precio, puntos, cant } }
 let franjaElegida = null;
 let fueraDeHorario = false;   // true si la cafeteria esta cerrada ahora
 let horarioCafe = { apertura: '08:00', cierre: '14:00' };
+let perfilActual = null;
 
 // Atajos para mostrar/ocultar vistas.
 function verVista(cual) {
-  for (const v of ['login', 'menu', 'franja', 'seguimiento', 'pedidos']) {
+  for (const v of ['login', 'verificacion', 'menu', 'franja', 'seguimiento', 'pedidos']) {
     document.getElementById('vista-' + v).classList.toggle('oculto', v !== cual);
   }
 }
 function aviso(donde, texto, tipo) {
-  document.getElementById(donde).innerHTML =
-    texto ? `<div class="aviso ${tipo}">${texto}</div>` : '';
+  const cont = document.getElementById(donde);
+  cont.replaceChildren();
+  if (!texto) return;
+  const div = document.createElement('div');
+  div.className = `aviso ${tipo}`;
+  div.textContent = texto;
+  cont.appendChild(div);
+}
+
+function esc(valor) {
+  return String(valor ?? '').replace(/[&<>'"]/g, c => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'
+  })[c]);
 }
 
 
@@ -33,13 +53,55 @@ function aviso(donde, texto, tipo) {
 
 document.getElementById('btn-modo').addEventListener('click', () => {
   modoRegistro = !modoRegistro;
-  document.getElementById('btn-entrar').textContent = modoRegistro ? 'Crear cuenta' : 'Entrar';
+  document.getElementById('btn-entrar').textContent = modoRegistro ? 'Crear cuenta y enviar credencial' : 'Entrar';
   document.getElementById('btn-modo').textContent =
     modoRegistro ? '¿Ya tienes cuenta? Entrar' : '¿No tienes cuenta? Regístrate';
+  document.querySelectorAll('.registro-solo').forEach(el => el.classList.toggle('oculto', !modoRegistro));
+  document.getElementById('clave').autocomplete = modoRegistro ? 'new-password' : 'current-password';
   aviso('aviso-login', '', '');
 });
 
+document.getElementById('credencial').addEventListener('change', (e) => {
+  const archivo = e.target.files && e.target.files[0];
+  const preview = document.getElementById('credencial-preview');
+  if (!archivo) { preview.classList.add('oculto'); return; }
+  if (!validarImagen(archivo)) { e.target.value = ''; preview.classList.add('oculto'); return; }
+  preview.src = URL.createObjectURL(archivo);
+  preview.classList.remove('oculto');
+});
+
+function validarImagen(archivo) {
+  if (!archivo || !['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type)) {
+    aviso('aviso-login', 'La credencial debe ser una imagen JPG, PNG o WebP.', 'error');
+    return false;
+  }
+  if (archivo.size > 5 * 1024 * 1024) {
+    aviso('aviso-login', 'La imagen supera el límite de 5 MB.', 'error');
+    return false;
+  }
+  return true;
+}
+
+async function subirCredencial(archivo, nombre, matricula) {
+  if (!usuario || !validarImagen(archivo)) throw new Error('Selecciona una credencial válida.');
+  const extension = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp' }[archivo.type];
+  const ruta = `${usuario.id}/credencial.${extension}`;
+  const { error: errorSubida } = await db.storage
+    .from('credenciales')
+    .upload(ruta, archivo, { upsert: true, contentType: archivo.type });
+  if (errorSubida) throw errorSubida;
+
+  const { error: errorRegistro } = await db.rpc('registrar_credencial', {
+    p_nombre: nombre,
+    p_matricula: matricula,
+    p_ruta: ruta
+  });
+  if (errorRegistro) throw errorRegistro;
+}
+
 document.getElementById('btn-entrar').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-entrar');
+  const textoOriginal = btn.textContent;
   const correo = document.getElementById('correo').value.trim();
   const clave  = document.getElementById('clave').value;
 
@@ -53,35 +115,161 @@ document.getElementById('btn-entrar').addEventListener('click', async () => {
     return;
   }
 
-  if (modoRegistro) {
-    const { error } = await db.auth.signUp({ email: correo, password: clave });
-    if (error) { aviso('aviso-login', error.message, 'error'); return; }
-    // Nota: en produccion aqui pediria verificar el correo. Para probar,
-    // si tu proyecto tiene la confirmacion desactivada, entra directo.
-    aviso('aviso-login', 'Cuenta creada. Iniciando sesión…', 'ok');
+  if (clave.length < 8) {
+    aviso('aviso-login', 'La contraseña debe tener al menos 8 caracteres.', 'error');
+    return;
   }
 
+  if (modoRegistro) {
+    const nombre = document.getElementById('nombre').value.trim();
+    const matricula = document.getElementById('matricula').value.trim().toUpperCase();
+    const confirmar = document.getElementById('clave-confirmar').value;
+    const archivo = document.getElementById('credencial').files[0];
+    if (!nombre || !/^[A-Z0-9]{6,20}$/.test(matricula)) {
+      aviso('aviso-login', 'Escribe tu nombre completo y una matrícula válida.', 'error'); return;
+    }
+    if (clave !== confirmar) {
+      aviso('aviso-login', 'Las contraseñas no coinciden.', 'error'); return;
+    }
+    if (!archivo || !validarImagen(archivo)) {
+      aviso('aviso-login', 'La foto de tu credencial es obligatoria.', 'error'); return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Creando cuenta…';
+    const { data, error } = await db.auth.signUp({
+      email: correo,
+      password: clave,
+      options: {
+        data: { nombre, matricula },
+        emailRedirectTo: `${window.location.origin}/alumnoscafe/index.html`
+      }
+    });
+    if (error) {
+      aviso('aviso-login', error.message, 'error');
+      btn.disabled = false; btn.textContent = textoOriginal; return;
+    }
+    usuario = data.user;
+    if (!data.session) {
+      aviso('aviso-login', 'Cuenta creada. Confirma tu correo y después entra para completar la verificación.', 'ok');
+      modoRegistro = true;
+      document.getElementById('btn-modo').click();
+      btn.disabled = false; btn.textContent = 'Entrar';
+      return;
+    }
+    try {
+      btn.textContent = 'Subiendo credencial…';
+      await subirCredencial(archivo, nombre, matricula);
+      await iniciarSesion();
+    } catch (e) {
+      aviso('aviso-login', e.message || 'No se pudo subir la credencial.', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = textoOriginal;
+    }
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Entrando…';
   const { data, error } = await db.auth.signInWithPassword({ email: correo, password: clave });
-  if (error) { aviso('aviso-login', error.message, 'error'); return; }
+  if (error) {
+    aviso('aviso-login', error.message, 'error');
+    btn.disabled = false; btn.textContent = textoOriginal; return;
+  }
 
   usuario = data.user;
-  iniciarSesion();
+  await iniciarSesion();
+  btn.disabled = false; btn.textContent = textoOriginal;
 });
 
-document.getElementById('btn-salir').addEventListener('click', async () => {
+async function salir() {
   await db.auth.signOut();
-  usuario = null; carrito = {}; franjaElegida = null;
+  usuario = null; perfilActual = null; carrito = {}; franjaElegida = null;
   verVista('login');
-});
+}
+
+document.getElementById('btn-salir').addEventListener('click', salir);
+document.getElementById('btn-salir-verificacion').addEventListener('click', salir);
 
 
 // --- 2. MENU DEL DIA --------------------------------------------------
 
 async function iniciarSesion() {
-  document.getElementById('quien').textContent = usuario.email;
+  const { data: perfil, error } = await db
+    .from('usuarios')
+    .select('id, correo, nombre, matricula, rol, bloqueado, verificacion_estado, verificacion_notas, credencial_path')
+    .eq('id', usuario.id)
+    .maybeSingle();
+
+  if (error) {
+    verVista('login');
+    aviso('aviso-login', 'No se pudo consultar tu perfil: ' + error.message, 'error');
+    return;
+  }
+
+  perfilActual = perfil;
+  if (perfil && perfil.rol && perfil.rol !== 'alumno') {
+    await db.auth.signOut();
+    usuario = null;
+    verVista('login');
+    aviso('aviso-login', 'Esta entrada es exclusiva para estudiantes. El personal debe usar su acceso.', 'error');
+    return;
+  }
+
+  if (!perfil || perfil.verificacion_estado !== 'aprobada') {
+    mostrarVerificacion(perfil);
+    return;
+  }
+
+  document.getElementById('quien').textContent = perfil.nombre || usuario.email;
   verVista('menu');
   await cargarMenu();
 }
+
+function mostrarVerificacion(perfil) {
+  const estado = perfil ? perfil.verificacion_estado : 'pendiente';
+  const tieneFoto = Boolean(perfil && perfil.credencial_path);
+  document.getElementById('verificacion-correo').textContent = usuario.email;
+  const titulo = document.getElementById('verificacion-titulo');
+  const texto = document.getElementById('verificacion-texto');
+  const icono = document.getElementById('verificacion-icono');
+  const notas = document.getElementById('verificacion-notas');
+  const reenvio = document.getElementById('reenvio-credencial');
+
+  if (estado === 'rechazada') {
+    icono.textContent = '⚠️'; titulo.textContent = 'Necesitamos otra fotografía';
+    texto.textContent = 'Corrige la observación y vuelve a enviar tu credencial.';
+  } else if (!tieneFoto) {
+    icono.textContent = '📷'; titulo.textContent = 'Falta tu credencial';
+    texto.textContent = 'Sube una fotografía legible para que administración valide tu identidad.';
+  } else {
+    icono.textContent = '⏳'; titulo.textContent = 'Validación pendiente';
+    texto.textContent = 'Administración revisará que la credencial coincida con tu cuenta institucional.';
+  }
+  notas.textContent = perfil && perfil.verificacion_notas ? perfil.verificacion_notas : '';
+  notas.classList.toggle('oculto', !notas.textContent);
+  reenvio.classList.toggle('oculto', estado === 'pendiente' && tieneFoto);
+  verVista('verificacion');
+}
+
+document.getElementById('btn-reenviar-credencial').addEventListener('click', async () => {
+  const archivo = document.getElementById('credencial-reenvio').files[0];
+  if (!archivo || !validarImagen(archivo)) return;
+  const meta = usuario.user_metadata || {};
+  const nombre = (perfilActual && perfilActual.nombre) || meta.nombre || '';
+  const matricula = (perfilActual && perfilActual.matricula) || meta.matricula || '';
+  const btn = document.getElementById('btn-reenviar-credencial');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    await subirCredencial(archivo, nombre, matricula);
+    perfilActual = { ...(perfilActual || {}), nombre, matricula, credencial_path: 'enviada', verificacion_estado: 'pendiente', verificacion_notas: null };
+    mostrarVerificacion(perfilActual);
+  } catch (e) {
+    const notas = document.getElementById('verificacion-notas');
+    notas.textContent = e.message || 'No se pudo enviar la credencial.';
+    notas.classList.remove('oculto');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Enviar nuevamente';
+  }
+});
 
 let menuPlatillos = [];                 // platillos disponibles hoy (en memoria)
 let categoriaActiva = 'Todos';          // filtro seleccionado
@@ -177,8 +365,8 @@ function dibujarPlatillos() {
     div.innerHTML = `
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div class="platillo-info">
-          <div class="nom">${p.nombre}</div>
-          <div class="det">$${p.precio}</div>
+          <div class="nom">${esc(p.nombre)}</div>
+          <div class="det">$${Number(p.precio).toFixed(2)}</div>
         </div>
         <div class="cantidad">
           <button data-menos>−</button>
@@ -187,7 +375,7 @@ function dibujarPlatillos() {
         </div>
       </div>
       <input type="text" id="coment-${p.id}" placeholder="Nota: ej. sin cebolla"
-             value="${carrito[p.id] ? (carrito[p.id].comentario || '') : ''}"
+             value="${esc(carrito[p.id] ? (carrito[p.id].comentario || '') : '')}"
              style="display:${cant > 0 ? 'block' : 'none'}; width:100%; margin-top:8px; padding:8px 10px;
                     border:1px solid #c4c2b8; border-radius:8px; font-size:13px;" />`;
 
@@ -247,6 +435,8 @@ document.getElementById('btn-continuar').addEventListener('click', async () => {
 document.getElementById('btn-volver').addEventListener('click', () => verVista('menu'));
 
 async function cargarFranjas() {
+  franjaElegida = null;
+  document.getElementById('btn-confirmar').disabled = true;
   // Costo en puntos del pedido actual.
   let costo = 0;
   for (const id in carrito) costo += carrito[id].puntos * carrito[id].cant;
@@ -326,7 +516,7 @@ document.getElementById('btn-confirmar').addEventListener('click', async () => {
   if (!franjaElegida) return;
 
   // Doble seguro: si está fuera de horario, no confirmar.
-  if (fueraDeHorario) { mostrarModalHorario(); return; }
+  if (!(await verificarHorario())) { mostrarModalHorario(); return; }
 
   // Armar el arreglo de items como lo espera la funcion.
   const items = [];
@@ -551,7 +741,7 @@ function filaPedido(p, esActivo) {
 
   fila.innerHTML = `
     <div>
-      <div style="font-size:14px;">${partes.join(', ')}</div>
+      <div style="font-size:14px;">${partes.map(esc).join(', ')}</div>
       <div style="font-size:12px; color:#888;">${p.franjas ? p.franjas.inicio.slice(0,5) : ''}</div>
     </div>
     <span style="font-size:12px; font-weight:600; color:${colores[p.estado]}; white-space:nowrap;">

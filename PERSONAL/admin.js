@@ -8,11 +8,29 @@
 // =====================================================================
 
 // 'db' viene de comun.js (ya esta creado alla). No lo redefinimos aqui.
-const HOY = new Date().toISOString().slice(0, 10);
+function fechaLocalISO(fecha = new Date()) {
+  const y = fecha.getFullYear();
+  const m = String(fecha.getMonth() + 1).padStart(2, '0');
+  const d = String(fecha.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+const HOY = fechaLocalISO();
 
 function aviso(donde, texto, tipo) {
-  document.getElementById(donde).innerHTML =
-    texto ? `<div class="aviso ${tipo}">${texto}</div>` : '';
+  const cont = document.getElementById(donde);
+  cont.replaceChildren();
+  if (!texto) return;
+  const div = document.createElement('div');
+  div.className = `aviso ${tipo}`;
+  div.textContent = texto;
+  cont.appendChild(div);
+}
+
+function esc(valor) {
+  return String(valor ?? '').replace(/[&<>'"]/g, c => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'
+  })[c]);
 }
 
 document.getElementById('fecha').textContent =
@@ -79,8 +97,8 @@ function dibujarItemPlatillo(p, on) {
   div.className = 'item';
   div.innerHTML = `
     <div style="flex:1;">
-      <div class="nom">${p.nombre}</div>
-      <div class="det">${p.categoria || 'Comida'} · $${p.precio} · ${p.puntos} pts</div>
+      <div class="nom">${esc(p.nombre)}</div>
+      <div class="det">${esc(p.categoria || 'Comida')} · $${Number(p.precio).toFixed(2)} · ${Number(p.puntos)} pts</div>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
       <button data-editar title="Editar"
@@ -108,7 +126,7 @@ function dibujarItemPlatillo(p, on) {
 function convertirAEdicion(p, div, on) {
   div.innerHTML = `
     <div style="flex:1; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-      <input id="e-nombre" value="${p.nombre}"
+      <input id="e-nombre" value="${esc(p.nombre)}"
         style="flex:1; min-width:120px; padding:8px 10px; border:1.5px solid #ece7df; border-radius:9px; font-family:inherit; font-size:14px;" />
       <select id="e-categoria"
         style="padding:8px 10px; border:1.5px solid #ece7df; border-radius:9px; font-family:inherit; font-size:14px; background:#fff;">
@@ -331,7 +349,7 @@ async function cargarResumen(fecha) {
   // junto con sus items y platillos para sumar dinero y contar.
   const { data, error } = await db
     .from('pedidos')
-    .select('estado, franjas!inner ( fecha ), pedido_items ( cantidad, platillos ( nombre, precio ) )')
+    .select('estado, franjas!inner ( fecha ), pedido_items ( cantidad, precio_unitario, platillos ( nombre, precio ) )')
     .eq('franjas.fecha', fecha);
 
   const elPedidos   = document.getElementById('r-pedidos');
@@ -354,7 +372,7 @@ async function cargarResumen(fecha) {
     for (const it of (p.pedido_items || [])) {
       const pl = it.platillos;
       if (!pl) continue;
-      if (cuenta) totalDinero += pl.precio * it.cantidad;
+      if (cuenta) totalDinero += Number(it.precio_unitario ?? pl.precio) * it.cantidad;
       conteoPlatillos[pl.nombre] = (conteoPlatillos[pl.nombre] || 0) + it.cantidad;
     }
   }
@@ -377,7 +395,7 @@ async function cargarResumen(fecha) {
       fila.style.cssText = 'margin-bottom:10px;';
       fila.innerHTML = `
         <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:3px;">
-          <span>${nombre}</span>
+          <span>${esc(nombre)}</span>
           <span style="font-weight:600;">${cant}</span>
         </div>
         <div style="height:7px; background:#ece7df; border-radius:4px; overflow:hidden;">
@@ -392,6 +410,171 @@ async function cargarResumen(fecha) {
 document.getElementById('resumen-fecha').addEventListener('change', (e) => {
   cargarResumen(e.target.value);
 });
+
+
+// --- CUENTAS Y VERIFICACION DE IDENTIDAD -----------------------------
+
+let usuariosAdmin = [];
+
+async function cargarUsuarios() {
+  const cont = document.getElementById('lista-usuarios');
+  cont.innerHTML = '<p class="vacio">Cargando cuentas…</p>';
+  const { data, error } = await db.rpc('listar_cuentas_admin');
+
+  if (error) {
+    cont.textContent = 'No se pudieron cargar las cuentas: ' + error.message;
+    return;
+  }
+  usuariosAdmin = data || [];
+  document.getElementById('u-total').textContent = usuariosAdmin.length;
+  document.getElementById('u-pendientes').textContent = usuariosAdmin.filter(u => u.rol === 'alumno' && u.verificacion_estado === 'pendiente').length;
+  document.getElementById('u-bloqueados').textContent = usuariosAdmin.filter(u => u.bloqueado).length;
+  dibujarUsuarios();
+}
+
+function usuariosFiltrados() {
+  const texto = document.getElementById('u-buscar').value.trim().toLowerCase();
+  const filtro = document.getElementById('u-filtro').value;
+  return usuariosAdmin.filter(u => {
+    const coincide = !texto || [u.nombre, u.correo, u.matricula]
+      .some(v => String(v || '').toLowerCase().includes(texto));
+    if (!coincide) return false;
+    if (filtro === 'todos') return true;
+    if (filtro === 'bloqueada') return u.bloqueado;
+    if (filtro === 'personal') return u.rol === 'admin' || u.rol === 'cocina';
+    return u.verificacion_estado === filtro;
+  });
+}
+
+function dibujarUsuarios() {
+  const cont = document.getElementById('lista-usuarios');
+  const lista = usuariosFiltrados();
+  cont.replaceChildren();
+  if (!lista.length) {
+    const vacio = document.createElement('p');
+    vacio.className = 'vacio'; vacio.textContent = 'No hay cuentas con este filtro.';
+    cont.appendChild(vacio); return;
+  }
+  for (const u of lista) cont.appendChild(tarjetaUsuario(u));
+}
+
+function tarjetaUsuario(u) {
+  const card = document.createElement('article');
+  card.className = 'usuario-card';
+  const info = document.createElement('div');
+  info.className = 'usuario-info';
+  const nombre = document.createElement('strong');
+  nombre.textContent = u.nombre || u.correo || 'Sin nombre';
+  const datos = document.createElement('span');
+  datos.textContent = [u.correo, u.matricula, u.rol].filter(Boolean).join(' · ');
+  const etiquetas = document.createElement('div');
+  etiquetas.className = 'usuario-etiquetas';
+  etiquetas.appendChild(etiquetaUsuario(u.verificacion_estado || 'sin_verificar'));
+  if (!u.correo_confirmado) etiquetas.appendChild(etiquetaUsuario('correo sin confirmar'));
+  if (u.bloqueado) etiquetas.appendChild(etiquetaUsuario('bloqueada'));
+  if (Number(u.faltas) > 0) etiquetas.appendChild(etiquetaUsuario(`${u.faltas} faltas`));
+  info.append(nombre, datos, etiquetas);
+
+  const acciones = document.createElement('div');
+  acciones.className = 'usuario-acciones';
+  if (u.credencial_path) acciones.appendChild(botonUsuario('Ver credencial', 'secundario', () => verCredencial(u)));
+  if (u.rol === 'alumno' && u.credencial_path && u.verificacion_estado !== 'aprobada') {
+    acciones.appendChild(botonUsuario('Aprobar', 'aprobar', () => revisarUsuario(u, 'aprobada')));
+  }
+  if (u.rol === 'alumno' && u.credencial_path && u.verificacion_estado !== 'rechazada') {
+    acciones.appendChild(botonUsuario('Rechazar', 'rechazar', () => revisarUsuario(u, 'rechazada')));
+  }
+  if (u.bloqueado) acciones.appendChild(botonUsuario('Desbloquear', 'secundario', () => desbloquearDesdeAdmin(u)));
+  const selectorRol = document.createElement('select');
+  selectorRol.className = 'usuario-rol';
+  selectorRol.setAttribute('aria-label', `Perfil de ${u.nombre || u.correo}`);
+  for (const rol of ['alumno', 'cocina', 'admin']) {
+    const opcion = document.createElement('option');
+    opcion.value = rol;
+    opcion.textContent = rol === 'alumno' ? 'Alumno' : rol === 'cocina' ? 'Cocina' : 'Administrador';
+    opcion.selected = u.rol === rol;
+    selectorRol.appendChild(opcion);
+  }
+  selectorRol.addEventListener('change', () => cambiarRolUsuario(u, selectorRol));
+  acciones.appendChild(selectorRol);
+  card.append(info, acciones);
+  return card;
+}
+
+function etiquetaUsuario(texto) {
+  const span = document.createElement('span');
+  span.className = 'usuario-estado estado-' + String(texto).replace(/\s+/g, '-');
+  span.textContent = String(texto).replace('_', ' ');
+  return span;
+}
+
+function botonUsuario(texto, clase, accion) {
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = `usuario-btn ${clase}`; btn.textContent = texto;
+  btn.addEventListener('click', accion);
+  return btn;
+}
+
+async function verCredencial(u) {
+  const { data, error } = await db.storage.from('credenciales').createSignedUrl(u.credencial_path, 300);
+  if (error) { aviso('aviso-usuarios', error.message, 'error'); return; }
+  document.getElementById('credencial-alumno').textContent = u.nombre || u.correo;
+  document.getElementById('credencial-datos').textContent = [u.matricula, u.correo].filter(Boolean).join(' · ');
+  document.getElementById('credencial-imagen').src = data.signedUrl;
+  document.getElementById('modal-credencial').showModal();
+}
+
+async function revisarUsuario(u, estado) {
+  let notas = null;
+  if (estado === 'rechazada') {
+    notas = prompt('Explica qué debe corregir el estudiante:');
+    if (notas === null) return;
+    if (!notas.trim()) { aviso('aviso-usuarios', 'Escribe el motivo del rechazo.', 'error'); return; }
+  } else if (!confirm(`¿Aprobar la identidad de ${u.nombre || u.correo}?`)) return;
+
+  const { error } = await db.rpc('revisar_credencial', {
+    p_usuario_id: u.id,
+    p_estado: estado,
+    p_notas: notas
+  });
+  if (error) { aviso('aviso-usuarios', error.message, 'error'); return; }
+  aviso('aviso-usuarios', estado === 'aprobada' ? 'Credencial aprobada.' : 'Credencial rechazada.', 'ok');
+  cargarUsuarios();
+}
+
+async function desbloquearDesdeAdmin(u) {
+  if (!confirm(`¿Desbloquear a ${u.nombre || u.correo}?`)) return;
+  const { error } = await db.rpc('desbloquear_alumno', { p_usuario_id: u.id });
+  if (error) { aviso('aviso-usuarios', error.message, 'error'); return; }
+  cargarUsuarios();
+}
+
+async function cambiarRolUsuario(u, selector) {
+  const nuevoRol = selector.value;
+  if (nuevoRol === u.rol) return;
+  if (!confirm(`¿Cambiar el perfil de ${u.nombre || u.correo} a ${nuevoRol}?`)) {
+    selector.value = u.rol;
+    return;
+  }
+  selector.disabled = true;
+  const { error } = await db.rpc('cambiar_rol_usuario', {
+    p_usuario_id: u.id,
+    p_rol: nuevoRol
+  });
+  selector.disabled = false;
+  if (error) {
+    selector.value = u.rol;
+    aviso('aviso-usuarios', error.message, 'error');
+    return;
+  }
+  aviso('aviso-usuarios', 'Perfil actualizado correctamente.', 'ok');
+  cargarUsuarios();
+}
+
+document.getElementById('u-buscar').addEventListener('input', dibujarUsuarios);
+document.getElementById('u-filtro').addEventListener('change', dibujarUsuarios);
+document.getElementById('btn-recargar-usuarios').addEventListener('click', cargarUsuarios);
+document.getElementById('btn-cerrar-credencial').addEventListener('click', () => document.getElementById('modal-credencial').close());
 
 
 // --- HORARIO DE ATENCIÓN ----------------------------------------------
@@ -492,4 +675,5 @@ document.getElementById('btn-guardar-horario').addEventListener('click', async (
   cargarHorario();
   cargarPlatillos();
   cargarFranjas();
+  cargarUsuarios();
 })();

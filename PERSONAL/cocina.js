@@ -15,7 +15,20 @@
 // Antes de hacer nada, el guardia verifica que seas 'cocina' o 'admin'.
 // Si no, te manda al login.
 
-const HOY = new Date().toISOString().slice(0, 10);
+function fechaLocalISO(fecha = new Date()) {
+  const y = fecha.getFullYear();
+  const m = String(fecha.getMonth() + 1).padStart(2, '0');
+  const d = String(fecha.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+const HOY = fechaLocalISO();
+
+function esc(valor) {
+  return String(valor ?? '').replace(/[&<>'"]/g, c => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'
+  })[c]);
+}
 
 
 // --- 2. Cargar y dibujar todo -----------------------------------------
@@ -47,12 +60,16 @@ async function cargarPantalla() {
 
   for (const franja of franjas) {
     // Pedidos de esta franja que NO esten ya recogidos ni marcados como falta.
-    const { data: pedidos } = await db
+    const { data: pedidos, error: errorPedidos } = await db
       .from('pedidos')
-      .select('id, estado, pedido_items ( cantidad, comentario, platillos ( nombre, puntos ) )')
+      .select('id, estado, usuarios ( nombre, correo, matricula, verificacion_estado ), pedido_items ( cantidad, comentario, puntos_unitarios, platillos ( nombre, puntos ) )')
       .eq('franja_id', franja.id)
       .in('estado', ['pendiente', 'en_cocina', 'listo'])
       .order('creado', { ascending: true });
+
+    if (errorPedidos) {
+      console.error('No se pudieron cargar los pedidos de la franja:', errorPedidos);
+    }
 
     totalCocina += (pedidos || []).filter(p => p.estado === 'en_cocina' || p.estado === 'pendiente').length;
     totalListos += (pedidos || []).filter(p => p.estado === 'listo').length;
@@ -126,7 +143,7 @@ function dibujarPedido(p) {
   for (const item of (p.pedido_items || [])) {
     const nombre = item.platillos ? item.platillos.nombre : '¿?';
     partes.push(`${item.cantidad} ${nombre}`);
-    puntos += (item.platillos ? item.platillos.puntos : 0) * item.cantidad;
+    puntos += Number(item.puntos_unitarios ?? (item.platillos ? item.platillos.puntos : 0)) * item.cantidad;
     if (item.comentario) comentarios.push(`${nombre}: ${item.comentario}`);
   }
 
@@ -134,7 +151,7 @@ function dibujarPedido(p) {
   const textoComentarios = comentarios.length
     ? `<div style="font-size:13px; color:#b8731a; background:#fbeed7;
                    border-radius:6px; padding:6px 10px; margin-top:6px;">
-         📝 ${comentarios.join(' · ')}
+         📝 ${comentarios.map(esc).join(' · ')}
        </div>`
     : '';
 
@@ -150,13 +167,16 @@ function dibujarPedido(p) {
     ? `<button class="boton" data-noRecogido
               style="background:#fff;color:#c23b34;border:1.5px solid #f0c9c7;font-weight:600;">No recogido</button>`
     : '';
+  const estudiante = p.usuarios || {};
+  const identidad = [estudiante.nombre || estudiante.correo, estudiante.matricula].filter(Boolean).map(esc).join(' · ');
 
   fila.innerHTML = `
     <div style="flex:1;">
       <div class="pedido-info">
-        <span class="pedido-id">#${p.id.slice(0,4)}</span> · ${partes.join(', ')}
+        <span class="pedido-id">#${esc(p.id.slice(0,4))}</span> · ${partes.map(esc).join(', ')}
         <span class="pedido-pts">· ${puntos} pts</span>
       </div>
+      <div style="font-size:12px;color:#5f5e5a;margin-top:3px;">${identidad || 'Alumno sin datos de perfil'}</div>
       ${textoComentarios}
     </div>
     <div class="pedido-acciones">
@@ -247,8 +267,8 @@ async function cargarBloqueados() {
     card.innerHTML = `
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div>
-          <div style="font-weight:500;">${u.nombre || u.correo}</div>
-          <div style="font-size:13px; color:#5f5e5a;">${u.correo} · ${u.faltas} faltas</div>
+          <div style="font-weight:500;">${esc(u.nombre || u.correo)}</div>
+          <div style="font-size:13px; color:#5f5e5a;">${esc(u.correo)} · ${Number(u.faltas) || 0} faltas</div>
         </div>
         <button class="boton" data-desbloquear
                 style="background:#d6562b; color:#fff; border:none;">Desbloquear</button>
@@ -323,11 +343,10 @@ async function venderMostrador(franja, platillo, panel) {
     return;
   }
 
-  const nuevoUsado = franja.usado + platillo.puntos;
-  const { error } = await db
-    .from('franjas')
-    .update({ usado: nuevoUsado })
-    .eq('id', franja.id);
+  const { error } = await db.rpc('vender_mostrador', {
+    p_franja_id: franja.id,
+    p_puntos: platillo.puntos
+  });
 
   if (error) { alert('No se pudo descontar: ' + error.message); return; }
   panel.remove();

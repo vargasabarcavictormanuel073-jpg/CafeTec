@@ -17,17 +17,59 @@
       <div class="card">
         <div id="aviso-login"></div>
 
-        <div class="campo">
-          <label>Correo institucional</label>
-          <input type="email" id="correo" placeholder="L00000000@costagrande.tecnm.mx" />
+        <div class="campo registro-solo oculto">
+          <label for="nombre">Nombre completo</label>
+          <input type="text" id="nombre" autocomplete="name" maxlength="100" placeholder="Como aparece en tu credencial" />
+        </div>
+        <div class="campo registro-solo oculto">
+          <label for="matricula">Matrícula</label>
+          <input type="text" id="matricula" autocomplete="off" maxlength="20" placeholder="L00000000" />
         </div>
         <div class="campo">
-          <label>Contraseña</label>
-          <input type="password" id="clave" placeholder="••••••••" />
+          <label for="correo">Correo institucional</label>
+          <input type="email" id="correo" autocomplete="email" placeholder="L00000000@costagrande.tecnm.mx" />
+        </div>
+        <div class="campo">
+          <label for="clave">Contraseña</label>
+          <input type="password" id="clave" autocomplete="current-password" minlength="8" placeholder="Mínimo 8 caracteres" />
+        </div>
+        <div class="campo registro-solo oculto">
+          <label for="clave-confirmar">Confirmar contraseña</label>
+          <input type="password" id="clave-confirmar" autocomplete="new-password" minlength="8" placeholder="Repite tu contraseña" />
+        </div>
+        <div class="campo registro-solo oculto">
+          <label for="credencial">Foto de la credencial estudiantil</label>
+          <input type="file" id="credencial" accept="image/jpeg,image/png,image/webp" capture="environment" />
+          <p class="ayuda">Debe verse tu fotografía, nombre y matrícula. Máximo 5 MB.</p>
+          <img id="credencial-preview" class="credencial-preview oculto" alt="Vista previa de la credencial" />
         </div>
 
         <button class="boton" id="btn-entrar">Entrar</button>
         <button class="enlace" id="btn-modo">¿No tienes cuenta? Regístrate</button>
+      </div>
+    </div>
+
+    <!-- ====== VISTA: VERIFICACION DE IDENTIDAD ====== -->
+    <div id="vista-verificacion" class="oculto">
+      <div class="barra-top">
+        <div>
+          <p class="titulo">Verificación estudiantil</p>
+          <p class="quien" id="verificacion-correo"></p>
+        </div>
+        <button class="salir" id="btn-salir-verificacion">Salir</button>
+      </div>
+      <div class="card verificacion-card">
+        <div class="estado-icono" id="verificacion-icono">🪪</div>
+        <h2 id="verificacion-titulo">Revisando tu cuenta</h2>
+        <p id="verificacion-texto">Estamos consultando el estado de tu credencial.</p>
+        <div id="verificacion-notas" class="aviso error oculto"></div>
+        <div id="reenvio-credencial" class="oculto">
+          <div class="campo">
+            <label for="credencial-reenvio">Nueva foto de la credencial</label>
+            <input type="file" id="credencial-reenvio" accept="image/jpeg,image/png,image/webp" capture="environment" />
+          </div>
+          <button class="boton" id="btn-reenviar-credencial">Enviar nuevamente</button>
+        </div>
       </div>
     </div>
 

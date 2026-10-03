@@ -122,3 +122,42 @@ body {
 .franja-row:last-child { border-bottom: none; }
 .franja-row strong { font-family: 'Fraunces', serif; font-size: 16px; }
 .franja-row .det { color: var(--muted); font-weight: 600; }
+
+.cuentas-resumen { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+.cuentas-resumen > div { background:#fdfbf8; border:1px solid var(--line); border-radius:12px; padding:12px; }
+.cuentas-resumen strong { display:block; font-family:'Fraunces',serif; font-size:24px; }
+.cuentas-resumen span { color:var(--muted); font-size:12px; font-weight:600; }
+.cuentas-filtros { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.cuentas-filtros input, .cuentas-filtros select {
+  min-height:40px; padding:9px 12px; border:1.5px solid var(--line); border-radius:10px;
+  background:#fff; color:var(--ink); font:inherit;
+}
+.cuentas-filtros input { flex:1; min-width:230px; }
+.usuario-card { display:flex; justify-content:space-between; gap:16px; padding:15px 0; border-bottom:1px solid var(--line); }
+.usuario-card:last-child { border-bottom:0; }
+.usuario-info { min-width:0; }
+.usuario-info > strong, .usuario-info > span { display:block; }
+.usuario-info > span { color:var(--muted); font-size:13px; margin-top:3px; overflow-wrap:anywhere; }
+.usuario-etiquetas { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.usuario-estado { padding:4px 8px; border-radius:999px; background:#eee; color:#5f5e5a; font-size:11px; font-weight:700; text-transform:capitalize; }
+.estado-aprobada { background:#e1f2e8; color:#28643f; }
+.estado-pendiente { background:#fff1d6; color:#8a5b13; }
+.estado-rechazada, .estado-bloqueada { background:#fbe3e1; color:#a32d2d; }
+.usuario-acciones { display:flex; align-items:center; justify-content:flex-end; gap:7px; flex-wrap:wrap; }
+.usuario-rol { min-width:130px; padding:8px 10px; border:1.5px solid #ded7cc; border-radius:10px; background:#fff; color:#4c463f; font:inherit; font-size:13px; cursor:pointer; }
+.usuario-rol:disabled { opacity:.6; cursor:wait; }
+.usuario-btn { border:1px solid var(--line); background:#fff; border-radius:9px; padding:8px 10px; cursor:pointer; font:600 12px inherit; }
+.usuario-btn.aprobar { background:#2f7d4f; border-color:#2f7d4f; color:#fff; }
+.usuario-btn.rechazar { color:#a32d2d; border-color:#efc3c0; }
+.modal-credencial { width:min(720px, calc(100% - 32px)); border:0; border-radius:16px; padding:18px; box-shadow:0 25px 80px rgba(0,0,0,.28); }
+.modal-credencial::backdrop { background:rgba(20,18,16,.65); }
+.modal-cabecera { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.modal-cabecera #credencial-datos { color:var(--muted); font-size:13px; margin-top:3px; }
+.modal-cabecera button { border:0; background:#f2eee8; border-radius:8px; width:34px; height:34px; cursor:pointer; }
+.modal-credencial img { width:100%; max-height:70vh; object-fit:contain; border-radius:10px; background:#f4f1eb; }
+
+@media (max-width: 680px) {
+  .usuario-card { flex-direction:column; }
+  .usuario-acciones { justify-content:flex-start; }
+  .cuentas-resumen { grid-template-columns:1fr; }
+}
