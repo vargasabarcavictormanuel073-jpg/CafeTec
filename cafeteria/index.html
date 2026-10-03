@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso cafetería · CafeTec</title>
+  <link rel="stylesheet" href="../PERSONAL/estilos.css?v=20261003-cafeteria" />
+</head>
+<body>
+  <div class="login-wrap">
+    <img class="marca-logo" src="../assets/cafetec-logo.png?v=20261003-blue" alt="CafeTec · Tecnológico Nacional de México" />
+    <p class="titulo">Tablero de cafetería</p>
+    <p class="sub">Ingresa para ver y atender los pedidos en tiempo real</p>
+    <div class="card">
+      <div id="aviso"></div>
+      <div class="campo">
+        <label>Usuario o correo</label>
+        <input type="text" id="usuario" autocomplete="username" placeholder="Usuario del personal" autofocus />
+      </div>
+      <div class="campo">
+        <label>Contraseña</label>
+        <input type="password" id="clave" autocomplete="current-password" placeholder="••••••••" />
+      </div>
+      <button class="boton" id="entrar">Abrir tablero</button>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../PERSONAL/comun.js"></script>
+  <script>
+    const mensaje = (texto) => {
+      document.getElementById('aviso').innerHTML = texto ? `<div class="aviso error">${texto}</div>` : '';
+    };
+    const correoPersonal = (valor) => valor.includes('@')
+      ? valor.toLowerCase()
+      : `${valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}@costagrande.tecnm.mx`;
+
+    async function entrar() {
+      const usuario = document.getElementById('usuario').value.trim();
+      const password = document.getElementById('clave').value;
+      if (!usuario || !password) return mensaje('Escribe tu usuario y contraseña.');
+      mensaje('');
+      const { error } = await db.auth.signInWithPassword({ email: correoPersonal(usuario), password });
+      if (error) return mensaje('Usuario o contraseña incorrectos.');
+      const rol = await obtenerRol();
+      if (!['admin', 'cocina'].includes(rol)) {
+        await db.auth.signOut();
+        return mensaje('Esta entrada es únicamente para personal autorizado.');
+      }
+      location.href = '../PERSONAL/cocina.html';
+    }
+    document.getElementById('entrar').addEventListener('click', entrar);
+    document.getElementById('clave').addEventListener('keydown', (e) => { if (e.key === 'Enter') entrar(); });
+    (async () => { if (['admin', 'cocina'].includes(await obtenerRol())) location.href = '../PERSONAL/cocina.html'; })();
+  </script>
+</body>
+</html>

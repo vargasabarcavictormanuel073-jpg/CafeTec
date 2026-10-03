@@ -10,6 +10,7 @@ Aplicación web de cafetería escolar con tres perfiles:
 
 - `/` o `/alumnoscafe/`: acceso de alumnos.
 - `/PERSONAL/login.html`: acceso de cocina y administración.
+- `/cafeteria/`: acceso directo del personal al tablero de pedidos en tiempo real.
 
 ## Configuración de Supabase
 

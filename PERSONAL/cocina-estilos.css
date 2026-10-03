@@ -49,6 +49,8 @@ body {
   font-size: 28px; font-weight: 600; letter-spacing: -0.4px; margin: 0;
 }
 .subtitulo { font-size: 14px; color: var(--muted); margin: 5px 0 0; text-transform: capitalize; }
+.en-vivo { display:inline-block; width:11px; height:11px; border-radius:50%; background:#2f9c5a; box-shadow:0 0 0 0 rgba(47,156,90,.5); animation:pulso 1.8s infinite; vertical-align:2px; }
+@keyframes pulso { 70% { box-shadow:0 0 0 9px rgba(47,156,90,0); } 100% { box-shadow:0 0 0 0 rgba(47,156,90,0); } }
 
 .stats { display: flex; gap: 10px; align-items: center; }
 .stat {

@@ -21,6 +21,7 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+html { scroll-behavior: smooth; }
 body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   margin: 0; padding: 22px 18px 60px;
@@ -32,7 +33,21 @@ body {
   min-height: 100vh;
 }
 
-.contenedor { max-width: 680px; margin: 0 auto; }
+.admin-layout { max-width: 1120px; margin: 0 auto; display:grid; grid-template-columns:240px minmax(0, 1fr); gap:28px; align-items:start; }
+.contenedor { max-width: 820px; width:100%; min-width:0; }
+.admin-sidebar {
+  position:sticky; top:22px; background:rgba(255,255,255,.94); border:1px solid var(--line);
+  border-radius:20px; padding:18px; box-shadow:var(--shadow); backdrop-filter:blur(12px);
+}
+.admin-sidebar .marca-logo { width:100%; max-width:205px; margin:0 auto 14px; }
+.nav-kicker { margin:0 8px 10px; color:var(--muted); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; }
+.admin-nav { display:grid; gap:5px; }
+.admin-nav a { color:var(--ink); text-decoration:none; font-size:14px; font-weight:600; border-radius:10px; padding:10px 12px; }
+.admin-nav a:hover, .admin-nav a:focus { color:var(--brand); background:var(--brand-tint); outline:none; }
+.nav-salir { width:100%; margin-top:14px; border:1px solid var(--line); color:var(--muted); background:#fff; border-radius:10px; padding:10px; font:600 13px inherit; cursor:pointer; }
+.encabezado-accion { text-decoration:none; color:var(--brand); border:1.5px solid var(--brand); align-self:center; background:#fff; border-radius:10px; padding:9px 15px; font-size:13px; font-weight:600; }
+.ayuda-seccion { margin:-4px 0 18px; color:var(--muted); font-size:13px; line-height:1.55; }
+.seccion { scroll-margin-top:24px; }
 
 .titulo {
   font-family: 'Fraunces', Georgia, serif;
@@ -158,6 +173,13 @@ body {
 .modal-credencial img { width:100%; max-height:70vh; object-fit:contain; border-radius:10px; background:#f4f1eb; }
 
 @media (max-width: 680px) {
+  body { padding:12px 12px 50px; }
+  .admin-layout { display:block; }
+  .admin-sidebar { position:sticky; top:8px; z-index:20; padding:10px; margin-bottom:18px; }
+  .admin-sidebar .marca-logo, .nav-kicker { display:none; }
+  .admin-nav { display:flex; overflow-x:auto; gap:6px; scrollbar-width:none; }
+  .admin-nav a { flex:0 0 auto; padding:9px 11px; background:#f8fbff; border:1px solid var(--line); }
+  .nav-salir { display:none; }
   .usuario-card { flex-direction:column; }
   .usuario-acciones { justify-content:flex-start; }
   .cuentas-resumen { grid-template-columns:1fr; }

@@ -15,12 +15,12 @@
     <div class="card" id="caja">
       <div id="aviso"></div>
       <div class="campo">
-        <label>Correo</label>
-        <input type="email" id="correo" placeholder="correo@ejemplo.com" />
+        <label>Usuario o correo</label>
+        <input type="text" id="correo" autocomplete="username" placeholder="Ej. LuisRoberto" />
       </div>
       <div class="campo">
         <label>Contraseña</label>
-        <input type="password" id="clave" placeholder="••••••••" />
+        <input type="password" id="clave" autocomplete="current-password" placeholder="••••••••" />
       </div>
       <button class="boton" id="btn-entrar">Entrar</button>
     </div>
@@ -45,15 +45,23 @@
     }
 
     document.getElementById('btn-entrar').addEventListener('click', async () => {
-      const correo = document.getElementById('correo').value.trim();
+      const identificador = document.getElementById('correo').value.trim();
       const clave  = document.getElementById('clave').value;
-      if (!correo || !clave) { aviso('Llena correo y contraseña.', 'error'); return; }
+      if (!identificador || !clave) { aviso('Escribe tu usuario y contraseña.', 'error'); return; }
+
+      const correo = identificador.includes('@')
+        ? identificador.toLowerCase()
+        : `${identificador.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}@costagrande.tecnm.mx`;
 
       const { error } = await db.auth.signInWithPassword({ email: correo, password: clave });
-      if (error) { aviso(error.message, 'error'); return; }
+      if (error) { aviso('Usuario o contraseña incorrectos.', 'error'); return; }
 
       const rol = await obtenerRol();
       redirigir(rol);
+    });
+
+    document.getElementById('clave').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('btn-entrar').click();
     });
 
     // Si ya hay sesion abierta, redirige directo.

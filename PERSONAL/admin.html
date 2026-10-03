@@ -4,22 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cafetería · Administración</title>
-  <link rel="stylesheet" href="admin-estilos.css?v=20261003-blue" />
+  <link rel="stylesheet" href="admin-estilos.css?v=20261003-menu" />
 </head>
 <body>
-  <div class="contenedor">
-    <img class="marca-logo" src="../assets/cafetec-logo.png?v=20261003-blue" alt="CafeTec · Tecnológico Nacional de México" />
+  <div class="admin-layout">
+    <aside class="admin-sidebar" aria-label="Menú de administración">
+      <img class="marca-logo" src="../assets/cafetec-logo.png?v=20261003-blue" alt="CafeTec · Tecnológico Nacional de México" />
+      <p class="nav-kicker">Panel administrativo</p>
+      <nav class="admin-nav">
+        <a href="#resumen">Resumen</a>
+        <a href="#cuentas">Cuentas</a>
+        <a href="#horario">Horario</a>
+        <a href="#menu">Menú y platillos</a>
+        <a href="#franjas">Franjas</a>
+        <a href="cocina.html">Tablero de cafetería</a>
+      </nav>
+      <button class="nav-salir" onclick="cerrarSesion()">Cerrar sesión</button>
+    </aside>
+  <main class="contenedor">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <p class="titulo">Administración de la cafetería</p>
       <div style="display:flex;gap:8px;">
-        <a href="cocina.html" style="text-decoration:none;color:var(--brand);border:1.5px solid var(--brand);align-self:center;background:#fff;">Ver cocina</a>
-        <button onclick="cerrarSesion()" style="background:#fff;border:1.5px solid var(--line);color:var(--muted);cursor:pointer;">Salir</button>
+        <a class="encabezado-accion" href="cocina.html">Ver pedidos</a>
       </div>
     </div>
     <p class="subtitulo" id="fecha">Cargando…</p>
 
     <!-- ===== RESUMEN DEL DÍA ===== -->
-    <p class="seccion">Resumen</p>
+    <p class="seccion" id="resumen">Resumen</p>
     <div class="card">
       <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
         <label style="font-size:13px; font-weight:600;">Día:</label>
@@ -49,7 +61,7 @@
     </div>
 
     <!-- ===== CUENTAS Y VERIFICACION ===== -->
-    <p class="seccion">Cuentas registradas</p>
+    <p class="seccion" id="cuentas">Cuentas registradas</p>
     <div class="card">
       <div class="cuentas-resumen">
         <div><strong id="u-total">0</strong><span>Total</span></div>
@@ -73,7 +85,7 @@
     </div>
 
     <!-- ===== HORARIO DE ATENCIÓN ===== -->
-    <p class="seccion">Horario de atención</p>
+    <p class="seccion" id="horario">Horario de atención</p>
     <div class="card">
       <div id="aviso-horario"></div>
 
@@ -112,8 +124,9 @@
     </div>
 
     <!-- ===== PLATILLOS ===== -->
-    <p class="seccion">Platillos</p>
+    <p class="seccion" id="menu">Menú y platillos</p>
     <div class="card">
+      <p class="ayuda-seccion">Agrega los productos que verán los alumnos. Activa el interruptor para publicarlos en el menú de hoy.</p>
       <div id="aviso-platillo"></div>
       <div class="fila-form">
         <div class="campo">
@@ -143,7 +156,7 @@
     </div>
 
     <!-- ===== FRANJAS ===== -->
-    <p class="seccion">Franjas de hoy</p>
+    <p class="seccion" id="franjas">Franjas de hoy</p>
     <div class="card">
       <div id="aviso-franja"></div>
       <div class="fila-form">
@@ -159,6 +172,7 @@
       </div>
       <div id="lista-franjas"><p class="vacio">Cargando…</p></div>
     </div>
+  </main>
   </div>
 
   <dialog id="modal-credencial" class="modal-credencial">
