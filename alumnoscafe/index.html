@@ -27,8 +27,9 @@
           <input type="text" id="matricula" autocomplete="off" maxlength="20" placeholder="L00000000" />
         </div>
         <div class="campo">
-          <label for="correo">Correo institucional</label>
-          <input type="email" id="correo" autocomplete="email" placeholder="L00000000@costagrande.tecnm.mx" />
+          <label for="correo" id="correo-label">Número de control o correo institucional</label>
+          <input type="text" id="correo" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="L00000000 o correo completo" />
+          <p class="ayuda" id="correo-ayuda">Si escribes solo tu número, completaremos el correo automáticamente.</p>
         </div>
         <div class="campo">
           <label for="clave">Contraseña</label>
@@ -45,7 +46,7 @@
           <img id="credencial-preview" class="credencial-preview oculto" alt="Vista previa de la credencial" />
         </div>
 
-        <button class="boton" id="btn-entrar">Entrar</button>
+        <button class="boton" id="btn-entrar" type="button">Entrar</button>
         <button class="enlace" id="btn-modo">¿No tienes cuenta? Regístrate</button>
       </div>
     </div>
@@ -169,10 +170,10 @@
       <div style="font-family:'Fraunces',serif; font-size:21px; font-weight:600; margin-bottom:8px;">
         Estamos fuera de horario
       </div>
-      <div style="font-size:15px; color:#8a8378; line-height:1.5; margin-bottom:22px;">
+      <div style="font-size:15px; color:var(--muted); line-height:1.5; margin-bottom:22px;">
         Solo recibimos pedidos de
-        <strong id="modal-apertura" style="color:#2a2622;">--:--</strong> a
-        <strong id="modal-cierre" style="color:#2a2622;">--:--</strong>.
+        <strong id="modal-apertura" style="color:var(--ink);">--:--</strong> a
+        <strong id="modal-cierre" style="color:var(--ink);">--:--</strong>.
         Puedes ver el menú, pero por ahora no es posible ordenar.
       </div>
       <button class="boton" id="btn-modal-gracias">¡Gracias!</button>
@@ -181,6 +182,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="alumno.js"></script>
+  <script src="alumno.js?v=20261003-control"></script>
 </body>
 </html>

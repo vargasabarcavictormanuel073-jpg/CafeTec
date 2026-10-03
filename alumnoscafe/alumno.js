@@ -58,8 +58,30 @@ document.getElementById('btn-modo').addEventListener('click', () => {
     modoRegistro ? '¿Ya tienes cuenta? Entrar' : '¿No tienes cuenta? Regístrate';
   document.querySelectorAll('.registro-solo').forEach(el => el.classList.toggle('oculto', !modoRegistro));
   document.getElementById('clave').autocomplete = modoRegistro ? 'new-password' : 'current-password';
+  const campoCorreo = document.getElementById('correo');
+  document.getElementById('correo-label').textContent = modoRegistro
+    ? 'Correo institucional completo'
+    : 'Número de control o correo institucional';
+  document.getElementById('correo-ayuda').textContent = modoRegistro
+    ? 'Usa el correo @costagrande.tecnm.mx asociado a tu matrícula.'
+    : 'Si escribes solo tu número, completaremos el correo automáticamente.';
+  campoCorreo.type = modoRegistro ? 'email' : 'text';
+  campoCorreo.autocomplete = modoRegistro ? 'email' : 'username';
+  campoCorreo.placeholder = modoRegistro
+    ? 'L00000000@costagrande.tecnm.mx'
+    : 'L00000000 o correo completo';
   aviso('aviso-login', '', '');
 });
+
+function normalizarCorreoAcceso(valor, esRegistro) {
+  const identificador = String(valor || '').trim().toLowerCase();
+  if (!identificador) return null;
+  if (identificador.includes('@')) {
+    return identificador.endsWith('@costagrande.tecnm.mx') ? identificador : null;
+  }
+  if (esRegistro || !/^[a-z0-9]{6,20}$/.test(identificador)) return null;
+  return `${identificador}@costagrande.tecnm.mx`;
+}
 
 document.getElementById('credencial').addEventListener('change', (e) => {
   const archivo = e.target.files && e.target.files[0];
@@ -102,16 +124,18 @@ async function subirCredencial(archivo, nombre, matricula) {
 document.getElementById('btn-entrar').addEventListener('click', async () => {
   const btn = document.getElementById('btn-entrar');
   const textoOriginal = btn.textContent;
-  const correo = document.getElementById('correo').value.trim();
+  const identificador = document.getElementById('correo').value.trim();
+  const correo = normalizarCorreoAcceso(identificador, modoRegistro);
   const clave  = document.getElementById('clave').value;
 
-  if (!correo || !clave) {
-    aviso('aviso-login', 'Llena correo y contraseña.', 'error');
+  if (!identificador || !clave) {
+    aviso('aviso-login', 'Escribe tu número de control o correo y tu contraseña.', 'error');
     return;
   }
-  // Validacion rapida del dominio (la BD tambien lo valida).
-  if (!correo.toLowerCase().endsWith('@costagrande.tecnm.mx')) {
-    aviso('aviso-login', 'Usa tu correo institucional @costagrande.tecnm.mx', 'error');
+  if (!correo) {
+    aviso('aviso-login', modoRegistro
+      ? 'Escribe tu correo institucional completo @costagrande.tecnm.mx.'
+      : 'Escribe un número de control válido o tu correo institucional completo.', 'error');
     return;
   }
 
@@ -178,6 +202,10 @@ document.getElementById('btn-entrar').addEventListener('click', async () => {
   usuario = data.user;
   await iniciarSesion();
   btn.disabled = false; btn.textContent = textoOriginal;
+});
+
+document.getElementById('clave').addEventListener('keydown', (evento) => {
+  if (evento.key === 'Enter') document.getElementById('btn-entrar').click();
 });
 
 async function salir() {
