@@ -4,32 +4,35 @@
 * { box-sizing: border-box; }
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  margin: 0; padding: 20px; background: #f5f5f0; color: #2c2c2a;
+  margin: 0; padding: 20px; color: #13233a; min-height:100vh;
+  background: radial-gradient(circle at top, #fff 0, #f3f7fc 52%, #e7eff9 100%);
 }
 
 /* ---- Login ---- */
-.login-wrap { max-width: 380px; margin: 60px auto 0; }
+.login-wrap { max-width: 400px; margin: 38px auto 0; }
+.marca-logo { display:block; width:min(340px, 86vw); height:auto; margin:0 auto 22px; }
 .login-wrap .titulo { font-size: 24px; font-weight: 600; margin: 0; text-align: center; }
-.login-wrap .sub    { font-size: 14px; color: #5f5e5a; margin: 6px 0 24px; text-align: center; }
+.login-wrap .sub    { font-size: 14px; color: #61738a; margin: 6px 0 24px; text-align: center; }
 
 .card {
-  background: #fff; border: 1px solid #e2e0d8; border-radius: 14px; padding: 22px;
+  background: #fff; border: 1px solid #d8e3f0; border-radius: 16px; padding: 24px;
+  box-shadow: 0 16px 40px rgba(27,57,106,.10);
 }
 .campo { margin-bottom: 14px; }
-.campo label { display: block; font-size: 13px; color: #5f5e5a; margin-bottom: 5px; }
+.campo label { display: block; font-size: 13px; color: #536983; margin-bottom: 5px; }
 .campo input {
-  width: 100%; padding: 10px 12px; border: 1px solid #c4c2b8;
-  border-radius: 8px; font-size: 15px;
+  width: 100%; padding: 10px 12px; border: 1px solid #c6d5e6;
+  border-radius: 8px; font-size: 15px; background:#f8fbff;
 }
 .boton {
   width: 100%; font-size: 15px; padding: 11px 16px; border-radius: 8px;
-  border: none; background: #185fa5; color: #fff; cursor: pointer;
+  border: none; background: #1b396a; color: #fff; cursor: pointer;
 }
-.boton:hover  { background: #134d85; }
+.boton:hover  { background: #102a52; }
 .boton:active { transform: scale(0.99); }
 
 .aviso { font-size: 13px; padding: 10px 12px; border-radius: 8px; margin-bottom: 14px; }
 .aviso.error { background: #fcebeb; color: #a32d2d; }
 .aviso.ok    { background: #eaf3de; color: #27500a; }
 
-.cargando { text-align: center; color: #5f5e5a; padding: 40px; }
+.cargando { text-align: center; color: #61738a; padding: 40px; }

@@ -334,8 +334,8 @@ function dibujarBarraCategorias() {
       'white-space:nowrap; padding:8px 16px; border-radius:999px; cursor:pointer;' +
       'font-size:14px; font-weight:600; font-family:inherit; transition:all .15s;' +
       (activa
-        ? 'background:#d6562b; color:#fff; border:1.5px solid #d6562b;'
-        : 'background:#fff; color:#8a8378; border:1.5px solid #ece7df;');
+        ? 'background:#1b396a; color:#fff; border:1.5px solid #1b396a;'
+        : 'background:#fff; color:#61738a; border:1.5px solid #d8e3f0;');
     btn.addEventListener('click', () => {
       categoriaActiva = cat;
       dibujarBarraCategorias();
@@ -643,12 +643,12 @@ function pintarEstado(estado, horaFranja) {
     div.style.cssText = 'flex:1; text-align:center; font-size:12px;';
     div.innerHTML = `
       <div style="width:26px; height:26px; border-radius:50%; margin:0 auto 6px;
-                  background:${hecho ? '#d6562b' : '#e2e0d8'};
+                  background:${hecho ? '#1b396a' : '#d8e3f0'};
                   color:${hecho ? '#fff' : '#888'};
                   display:flex; align-items:center; justify-content:center; font-size:14px;">
         ${hecho ? '✓' : (i + 1)}
       </div>
-      <span style="color:${hecho ? '#d6562b' : '#888'};">${paso.etiqueta}</span>`;
+      <span style="color:${hecho ? '#1b396a' : '#718096'};">${paso.etiqueta}</span>`;
     cont.appendChild(div);
   });
 }

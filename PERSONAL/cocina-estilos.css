@@ -6,14 +6,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg:        #faf7f2;
+  --bg:        #f3f7fc;
   --surface:   #ffffff;
-  --ink:       #2a2622;
-  --muted:     #8a8378;
-  --line:      #ece7df;
-  --brand:     #d6562b;
-  --brand-dark:#b8431d;
-  --brand-tint:#fdeee7;
+  --ink:       #13233a;
+  --muted:     #61738a;
+  --line:      #d8e3f0;
+  --brand:     #1b396a;
+  --brand-dark:#102a52;
+  --brand-tint:#e7eff9;
   --ok:        #2f7d4f;
   --ok-tint:   #e6f3ea;
   --warn:      #b8731a;
@@ -32,8 +32,8 @@ body {
   background: var(--bg);
   color: var(--ink);
   background-image:
-    radial-gradient(60% 50% at 100% 0%, rgba(214,86,43,.06), transparent 60%),
-    radial-gradient(50% 40% at 0% 100%, rgba(47,125,79,.05), transparent 55%);
+    radial-gradient(60% 50% at 100% 0%, rgba(27,57,106,.12), transparent 60%),
+    radial-gradient(50% 40% at 0% 100%, rgba(38,98,157,.08), transparent 55%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -121,7 +121,7 @@ body {
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: 12px; padding: 14px 16px;
   border: 1.5px solid var(--line); border-radius: 14px; margin-bottom: 10px;
-  background: #fdfbf8; transition: border-color .15s;
+  background: #f8fbff; transition: border-color .15s;
 }
 .pedido:hover { border-color: #ddd5c8; }
 .pedido-info  { font-size: 15px; line-height: 1.5; }
@@ -145,3 +145,5 @@ body {
 .cargando {
   text-align: center; color: var(--muted); padding: 50px 0; font-size: 15px;
 }
+
+.marca-logo { display:block; width:min(245px, 48vw); height:auto; margin:0 0 12px; }

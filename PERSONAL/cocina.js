@@ -271,7 +271,7 @@ async function cargarBloqueados() {
           <div style="font-size:13px; color:#5f5e5a;">${esc(u.correo)} · ${Number(u.faltas) || 0} faltas</div>
         </div>
         <button class="boton" data-desbloquear
-                style="background:#d6562b; color:#fff; border:none;">Desbloquear</button>
+                style="background:#1b396a; color:#fff; border:none;">Desbloquear</button>
       </div>`;
     card.querySelector('[data-desbloquear]')
         .addEventListener('click', () => desbloquear(u));
@@ -326,7 +326,7 @@ async function descontarMostrador(franja, card) {
   for (const p of disponibles) {
     const b = document.createElement('button');
     b.className = 'boton';
-    b.style.cssText = 'background:#fff; border:1.5px solid #ece7df; color:#2a2622; font-weight:600;';
+    b.style.cssText = 'background:#fff; border:1.5px solid #d8e3f0; color:#13233a; font-weight:600;';
     b.textContent = p.nombre;
     b.addEventListener('click', () => venderMostrador(franja, p, panel));
     cont.appendChild(b);

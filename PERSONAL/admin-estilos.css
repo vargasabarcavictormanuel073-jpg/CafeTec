@@ -6,14 +6,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg:        #faf7f2;
+  --bg:        #f3f7fc;
   --surface:   #ffffff;
-  --ink:       #2a2622;
-  --muted:     #8a8378;
-  --line:      #ece7df;
-  --brand:     #d6562b;
-  --brand-dark:#b8431d;
-  --brand-tint:#fdeee7;
+  --ink:       #13233a;
+  --muted:     #61738a;
+  --line:      #d8e3f0;
+  --brand:     #1b396a;
+  --brand-dark:#102a52;
+  --brand-tint:#e7eff9;
   --ok:        #2f7d4f;
   --radius:    18px;
   --shadow:    0 1px 2px rgba(42,38,34,.04), 0 8px 24px rgba(42,38,34,.06);
@@ -26,8 +26,8 @@ body {
   margin: 0; padding: 22px 18px 60px;
   background: var(--bg); color: var(--ink);
   background-image:
-    radial-gradient(60% 50% at 100% 0%, rgba(214,86,43,.06), transparent 60%),
-    radial-gradient(50% 40% at 0% 100%, rgba(47,125,79,.05), transparent 55%);
+    radial-gradient(60% 50% at 100% 0%, rgba(27,57,106,.12), transparent 60%),
+    radial-gradient(50% 40% at 0% 100%, rgba(38,98,157,.08), transparent 55%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -71,7 +71,7 @@ body {
 .campo input, .campo select {
   width: 100%; padding: 11px 13px;
   border: 1.5px solid var(--line); border-radius: 11px;
-  font-size: 14px; font-family: inherit; color: var(--ink); background: #fdfbf8;
+  font-size: 14px; font-family: inherit; color: var(--ink); background: #f8fbff;
   transition: border-color .15s, box-shadow .15s;
 }
 .campo input:focus, .campo select:focus {
@@ -82,7 +82,7 @@ body {
   font-family: inherit; font-size: 14px; font-weight: 600;
   padding: 11px 18px; border-radius: 11px; border: none;
   background: var(--brand); color: #fff; cursor: pointer; white-space: nowrap;
-  transition: transform .12s, background .15s; box-shadow: 0 2px 8px rgba(214,86,43,.25);
+  transition: transform .12s, background .15s; box-shadow: 0 2px 8px rgba(27,57,106,.24);
 }
 .boton:hover  { background: var(--brand-dark); }
 .boton:active { transform: scale(.98); }
@@ -124,7 +124,8 @@ body {
 .franja-row .det { color: var(--muted); font-weight: 600; }
 
 .cuentas-resumen { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
-.cuentas-resumen > div { background:#fdfbf8; border:1px solid var(--line); border-radius:12px; padding:12px; }
+.cuentas-resumen > div { background:#f8fbff; border:1px solid var(--line); border-radius:12px; padding:12px; }
+.marca-logo { display:block; width:min(245px, 48vw); height:auto; margin:0 0 12px; }
 .cuentas-resumen strong { display:block; font-family:'Fraunces',serif; font-size:24px; }
 .cuentas-resumen span { color:var(--muted); font-size:12px; font-weight:600; }
 .cuentas-filtros { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }

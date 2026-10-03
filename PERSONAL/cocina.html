@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cocina · Cafetería</title>
-  <link rel="stylesheet" href="cocina-estilos.css" />
+  <link rel="stylesheet" href="cocina-estilos.css?v=20261003-blue" />
 </head>
 <body>
 
   <div class="encabezado">
     <div>
+      <img class="marca-logo" src="../assets/cafetec-logo.png?v=20261003-blue" alt="CafeTec · Tecnológico Nacional de México" />
       <p class="titulo">Cocina · pedidos de hoy</p>
       <p class="subtitulo" id="fecha">Cargando…</p>
     </div>
@@ -23,7 +24,7 @@
         <p class="num" id="stat-listos">0</p>
       </div>
       <a id="link-admin" href="admin.html"
-         style="display:none;text-decoration:none;color:#185fa5;font-size:13px;align-self:center;border:1px solid #185fa5;border-radius:8px;padding:8px 14px;">
+         style="display:none;text-decoration:none;color:var(--brand);font-size:13px;align-self:center;border:1px solid var(--brand);border-radius:8px;padding:8px 14px;">
         ← Administración
       </a>
       <button class="salir-btn" onclick="cerrarSesion()"

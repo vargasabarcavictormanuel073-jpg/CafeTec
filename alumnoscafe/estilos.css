@@ -5,14 +5,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg:        #faf7f2;
+  --bg:        #f3f7fc;
   --surface:   #ffffff;
-  --ink:       #2a2622;
-  --muted:     #8a8378;
-  --line:      #ece7df;
-  --brand:     #d6562b;
-  --brand-dark:#b8431d;
-  --brand-tint:#fdeee7;
+  --ink:       #13233a;
+  --muted:     #61738a;
+  --line:      #d8e3f0;
+  --brand:     #1b396a;
+  --brand-dark:#102a52;
+  --brand-tint:#e7eff9;
   --ok:        #2f7d4f;
   --ok-tint:   #e6f3ea;
   --warn:      #b8731a;
@@ -32,8 +32,8 @@ body {
   background: var(--bg);
   color: var(--ink);
   background-image:
-    radial-gradient(60% 50% at 100% 0%, rgba(214,86,43,.06), transparent 60%),
-    radial-gradient(50% 40% at 0% 100%, rgba(47,125,79,.05), transparent 55%);
+    radial-gradient(60% 50% at 100% 0%, rgba(27,57,106,.12), transparent 60%),
+    radial-gradient(50% 40% at 0% 100%, rgba(38,98,157,.08), transparent 55%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -73,7 +73,7 @@ body {
   width: 100%; padding: 13px 15px;
   border: 1.5px solid var(--line); border-radius: 12px;
   font-size: 15px; font-family: inherit; color: var(--ink);
-  background: #fdfbf8; transition: border-color .15s, box-shadow .15s;
+  background: #f8fbff; transition: border-color .15s, box-shadow .15s;
 }
 .campo input:focus {
   outline: none; border-color: var(--brand);
@@ -85,7 +85,7 @@ body {
   padding: 14px 18px; border-radius: 12px; border: none;
   background: var(--brand); color: #fff; cursor: pointer;
   transition: transform .12s, background .15s, box-shadow .15s;
-  box-shadow: 0 2px 8px rgba(214,86,43,.25);
+  box-shadow: 0 2px 8px rgba(27,57,106,.24);
 }
 .boton:hover  { background: var(--brand-dark); }
 .boton:active { transform: scale(.98); }
@@ -162,6 +162,9 @@ body {
 
 .oculto { display: none; }
 
+.marca-logo { display:block; width:min(390px, 88vw); height:auto; margin:0 auto 18px; }
+.marca-logo.compacta { width:min(230px, 55vw); margin:0 0 10px; }
+
 #vista-login { padding-top: 36px; }
 #vista-login .titulo { font-size: 38px; text-align: center; }
 #vista-login .subtitulo { text-align: center; }
@@ -177,7 +180,7 @@ input[type="file"] {
 .credencial-preview {
   display: block; width: 100%; max-height: 220px; object-fit: contain;
   margin-top: 12px; border: 1px solid var(--line); border-radius: 12px;
-  background: #f5f1ea;
+  background: #f2f6fb;
 }
 .credencial-preview.oculto { display: none; }
 

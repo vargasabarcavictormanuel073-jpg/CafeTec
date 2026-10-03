@@ -399,7 +399,7 @@ async function cargarResumen(fecha) {
           <span style="font-weight:600;">${cant}</span>
         </div>
         <div style="height:7px; background:#ece7df; border-radius:4px; overflow:hidden;">
-          <span style="display:block; height:100%; width:${pct}%; background:#d6562b; border-radius:4px;"></span>
+          <span style="display:block; height:100%; width:${pct}%; background:#1b396a; border-radius:4px;"></span>
         </div>`;
       elTop.appendChild(fila);
     }

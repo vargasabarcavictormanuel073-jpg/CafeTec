@@ -4,15 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cafetería · Administración</title>
-  <link rel="stylesheet" href="admin-estilos.css" />
+  <link rel="stylesheet" href="admin-estilos.css?v=20261003-blue" />
 </head>
 <body>
   <div class="contenedor">
+    <img class="marca-logo" src="../assets/cafetec-logo.png?v=20261003-blue" alt="CafeTec · Tecnológico Nacional de México" />
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <p class="titulo">Administración de la cafetería</p>
       <div style="display:flex;gap:8px;">
-        <a href="cocina.html" style="text-decoration:none;color:#d6562b;border:1.5px solid #d6562b;align-self:center;background:#fff;">Ver cocina</a>
-        <button onclick="cerrarSesion()" style="background:#fff;border:1.5px solid #ece7df;color:#8a8378;cursor:pointer;">Salir</button>
+        <a href="cocina.html" style="text-decoration:none;color:var(--brand);border:1.5px solid var(--brand);align-self:center;background:#fff;">Ver cocina</a>
+        <button onclick="cerrarSesion()" style="background:#fff;border:1.5px solid var(--line);color:var(--muted);cursor:pointer;">Salir</button>
       </div>
     </div>
     <p class="subtitulo" id="fecha">Cargando…</p>
@@ -23,7 +24,7 @@
       <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
         <label style="font-size:13px; font-weight:600;">Día:</label>
         <input type="date" id="resumen-fecha"
-          style="padding:9px 12px; border:1.5px solid #ece7df; border-radius:11px; font-family:inherit; font-size:14px; background:#fdfbf8;" />
+          style="padding:9px 12px; border:1.5px solid var(--line); border-radius:11px; font-family:inherit; font-size:14px; background:#f8fbff;" />
       </div>
 
       <!-- Tarjetas de números -->
@@ -34,7 +35,7 @@
         </div>
         <div style="flex:1; min-width:120px; background:#fdfbf8; border:1px solid #ece7df; border-radius:14px; padding:16px;">
           <div style="font-size:13px; color:#8a8378; font-weight:600;">Vendido</div>
-          <div id="r-dinero" style="font-size:28px; font-weight:700; font-family:'Fraunces',serif; color:#d6562b;">$0</div>
+          <div id="r-dinero" style="font-size:28px; font-weight:700; font-family:'Fraunces',serif; color:var(--brand);">$0</div>
         </div>
         <div style="flex:1; min-width:120px; background:#fdfbf8; border:1px solid #ece7df; border-radius:14px; padding:16px;">
           <div style="font-size:13px; color:#8a8378; font-weight:600;">Recogidos</div>
@@ -86,7 +87,7 @@
             Los alumnos solo pueden confirmar pedidos en este horario.
           </div>
         </div>
-        <button class="boton" id="btn-modificar-horario" style="background:#fff; color:#d6562b; border:1.5px solid #d6562b; box-shadow:none;">Modificar</button>
+        <button class="boton" id="btn-modificar-horario" style="background:#fff; color:var(--brand); border:1.5px solid var(--brand); box-shadow:none;">Modificar</button>
       </div>
 
       <!-- Modo EDICIÓN: oculto hasta tocar Modificar -->
