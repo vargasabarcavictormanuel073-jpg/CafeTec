@@ -1,0 +1,124 @@
+/* =====================================================================
+   admin-estilos.css  -  Panel de administración · diseño moderno y limpio
+   (misma identidad que alumno y cocina)
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg:        #faf7f2;
+  --surface:   #ffffff;
+  --ink:       #2a2622;
+  --muted:     #8a8378;
+  --line:      #ece7df;
+  --brand:     #d6562b;
+  --brand-dark:#b8431d;
+  --brand-tint:#fdeee7;
+  --ok:        #2f7d4f;
+  --radius:    18px;
+  --shadow:    0 1px 2px rgba(42,38,34,.04), 0 8px 24px rgba(42,38,34,.06);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  margin: 0; padding: 22px 18px 60px;
+  background: var(--bg); color: var(--ink);
+  background-image:
+    radial-gradient(60% 50% at 100% 0%, rgba(214,86,43,.06), transparent 60%),
+    radial-gradient(50% 40% at 0% 100%, rgba(47,125,79,.05), transparent 55%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.contenedor { max-width: 680px; margin: 0 auto; }
+
+.titulo {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 28px; font-weight: 600; letter-spacing: -0.4px; margin: 0;
+}
+.subtitulo { font-size: 14px; color: var(--muted); margin: 5px 0 24px; text-transform: capitalize; }
+
+.seccion {
+  font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600;
+  margin: 26px 0 12px;
+}
+
+/* Botones del encabezado (Ver cocina / Salir) */
+.contenedor > div:first-child a,
+.contenedor > div:first-child button {
+  font-family: inherit; font-weight: 600; font-size: 13px;
+  border-radius: 10px; padding: 9px 15px; cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+
+.card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 20px 22px; margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  animation: subir .4s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes subir {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Formularios */
+.fila-form { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
+.campo { flex: 1; min-width: 110px; }
+.campo label { display: block; font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.campo input, .campo select {
+  width: 100%; padding: 11px 13px;
+  border: 1.5px solid var(--line); border-radius: 11px;
+  font-size: 14px; font-family: inherit; color: var(--ink); background: #fdfbf8;
+  transition: border-color .15s, box-shadow .15s;
+}
+.campo input:focus, .campo select:focus {
+  outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-tint);
+}
+
+.boton {
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  padding: 11px 18px; border-radius: 11px; border: none;
+  background: var(--brand); color: #fff; cursor: pointer; white-space: nowrap;
+  transition: transform .12s, background .15s; box-shadow: 0 2px 8px rgba(214,86,43,.25);
+}
+.boton:hover  { background: var(--brand-dark); }
+.boton:active { transform: scale(.98); }
+
+/* Lista de platillos */
+.item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--line);
+}
+.item:last-child { border-bottom: none; }
+.item .nom { font-size: 15px; font-weight: 600; }
+.item .det { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+/* Interruptor */
+.switch { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; cursor: pointer; inset: 0;
+  background: #d8d2c8; border-radius: 999px; transition: .2s;
+}
+.slider:before {
+  content: ""; position: absolute; height: 20px; width: 20px;
+  left: 3px; bottom: 3px; background: #fff; border-radius: 50%;
+  transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.switch input:checked + .slider { background: var(--brand); }
+.switch input:checked + .slider:before { transform: translateX(20px); }
+
+.etq { font-size: 12px; color: var(--muted); min-width: 88px; text-align: right; font-weight: 600; }
+
+.vacio { font-size: 14px; color: var(--muted); padding: 10px 0; }
+
+.franja-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+}
+.franja-row:last-child { border-bottom: none; }
+.franja-row strong { font-family: 'Fraunces', serif; font-size: 16px; }
+.franja-row .det { color: var(--muted); font-weight: 600; }

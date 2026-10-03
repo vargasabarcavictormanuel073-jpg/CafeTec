@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cafetería · Pedir</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body>
+  <div class="contenedor">
+
+    <!-- ====== VISTA 1: LOGIN / REGISTRO ====== -->
+    <div id="vista-login">
+      <p class="titulo">Cafetería</p>
+      <p class="subtitulo">Pide con anticipación y recoge sin fila</p>
+
+      <div class="card">
+        <div id="aviso-login"></div>
+
+        <div class="campo">
+          <label>Correo institucional</label>
+          <input type="email" id="correo" placeholder="L00000000@costagrande.tecnm.mx" />
+        </div>
+        <div class="campo">
+          <label>Contraseña</label>
+          <input type="password" id="clave" placeholder="••••••••" />
+        </div>
+
+        <button class="boton" id="btn-entrar">Entrar</button>
+        <button class="enlace" id="btn-modo">¿No tienes cuenta? Regístrate</button>
+      </div>
+    </div>
+
+    <!-- ====== VISTA 2: MENU ====== -->
+    <div id="vista-menu" class="oculto">
+      <div class="barra-top">
+        <div>
+          <p class="titulo">Menú de hoy</p>
+          <p class="quien" id="quien"></p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="salir" id="btn-mis-pedidos">Mis pedidos</button>
+          <button class="salir" id="btn-salir">Salir</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="lista-platillos">Cargando menú…</div>
+      </div>
+
+      <div class="card" id="caja-resumen" style="display:none;">
+        <div class="resumen total">
+          <span>Total</span>
+          <span>$<span id="total-precio">0</span></span>
+        </div>
+        <button class="boton" id="btn-continuar" style="margin-top:14px;">Elegir horario</button>
+      </div>
+    </div>
+
+    <!-- ====== VISTA 3: ELEGIR FRANJA Y CONFIRMAR ====== -->
+    <div id="vista-franja" class="oculto">
+      <div class="barra-top">
+        <p class="titulo">¿A qué hora recoges?</p>
+        <button class="salir" id="btn-volver">Volver</button>
+      </div>
+
+      <div id="aviso-pedido"></div>
+
+      <div class="card">
+        <div id="lista-franjas">Cargando horarios…</div>
+      </div>
+
+      <div class="card">
+        <button class="boton" id="btn-confirmar" disabled>Confirmar pedido</button>
+      </div>
+    </div>
+
+    <!-- ====== VISTA 5: MIS PEDIDOS (lista) ====== -->
+    <div id="vista-pedidos" class="oculto">
+      <div class="barra-top">
+        <p class="titulo">Mis pedidos de hoy</p>
+        <button class="salir" id="btn-volver-menu">Volver al menú</button>
+      </div>
+      <div class="card">
+        <div id="lista-pedidos">Cargando…</div>
+      </div>
+    </div>
+
+    <!-- ====== VISTA 4: SEGUIMIENTO DEL PEDIDO ====== -->
+    <div id="vista-seguimiento" class="oculto">
+      <div class="barra-top">
+        <p class="titulo">Tu pedido</p>
+        <div style="display:flex; gap:8px;">
+          <button class="salir" id="btn-ver-pedidos">Mis pedidos</button>
+          <button class="salir" id="btn-nuevo">Nuevo pedido</button>
+        </div>
+      </div>
+
+      <div class="card" id="tarjeta-seguimiento">
+        <div id="seg-estado-grande" style="text-align:center; padding:10px 0;">
+          <div id="seg-icono" style="font-size:48px;">⏳</div>
+          <div id="seg-texto" style="font-size:20px; font-weight:600; margin-top:8px;">Pendiente</div>
+          <div id="seg-sub" style="font-size:14px; color:#5f5e5a; margin-top:4px;"></div>
+        </div>
+
+        <!-- Pasos del pedido -->
+        <div id="seg-pasos" style="display:flex; justify-content:space-between; margin:24px 0 8px;"></div>
+
+        <div id="seg-detalle" style="font-size:14px; color:#5f5e5a; border-top:1px solid #eee; padding-top:14px; margin-top:14px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sonido de aviso cuando el pedido esta listo -->
+  <audio id="sonido-listo" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+  </audio>
+
+  <!-- Modal: fuera de horario -->
+  <div id="modal-horario" style="display:none; position:fixed; inset:0; z-index:50;
+       background:rgba(42,38,34,.45); align-items:center; justify-content:center; padding:24px;">
+    <div style="background:#fff; border-radius:20px; padding:32px 26px; max-width:340px; width:100%;
+                text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.25); animation:subir .35s ease both;">
+      <div style="font-size:46px; margin-bottom:6px;">🕐</div>
+      <div style="font-family:'Fraunces',serif; font-size:21px; font-weight:600; margin-bottom:8px;">
+        Estamos fuera de horario
+      </div>
+      <div style="font-size:15px; color:#8a8378; line-height:1.5; margin-bottom:22px;">
+        Solo recibimos pedidos de
+        <strong id="modal-apertura" style="color:#2a2622;">--:--</strong> a
+        <strong id="modal-cierre" style="color:#2a2622;">--:--</strong>.
+        Puedes ver el menú, pero por ahora no es posible ordenar.
+      </div>
+      <button class="boton" id="btn-modal-gracias">¡Gracias!</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="alumno.js"></script>
+</body>
+</html>

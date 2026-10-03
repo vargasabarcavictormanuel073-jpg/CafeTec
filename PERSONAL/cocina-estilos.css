@@ -1,0 +1,147 @@
+/* =====================================================================
+   cocina-estilos.css  -  Pantalla de cocina · diseño moderno y limpio
+   (misma identidad que la pantalla del alumno)
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg:        #faf7f2;
+  --surface:   #ffffff;
+  --ink:       #2a2622;
+  --muted:     #8a8378;
+  --line:      #ece7df;
+  --brand:     #d6562b;
+  --brand-dark:#b8431d;
+  --brand-tint:#fdeee7;
+  --ok:        #2f7d4f;
+  --ok-tint:   #e6f3ea;
+  --warn:      #b8731a;
+  --warn-tint: #fbeed7;
+  --danger:    #c23b34;
+  --danger-tint:#fbe8e7;
+  --radius:    18px;
+  --shadow:    0 1px 2px rgba(42,38,34,.04), 0 8px 24px rgba(42,38,34,.06);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  margin: 0; padding: 22px 18px 60px;
+  background: var(--bg);
+  color: var(--ink);
+  background-image:
+    radial-gradient(60% 50% at 100% 0%, rgba(214,86,43,.06), transparent 60%),
+    radial-gradient(50% 40% at 0% 100%, rgba(47,125,79,.05), transparent 55%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* ---- Encabezado ---- */
+.encabezado {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px;
+  max-width: 920px; margin: 0 auto 22px;
+}
+.titulo {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 28px; font-weight: 600; letter-spacing: -0.4px; margin: 0;
+}
+.subtitulo { font-size: 14px; color: var(--muted); margin: 5px 0 0; text-transform: capitalize; }
+
+.stats { display: flex; gap: 10px; align-items: center; }
+.stat {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 14px; padding: 10px 18px; text-align: center;
+  box-shadow: var(--shadow);
+}
+.stat .label { font-size: 12px; color: var(--muted); margin: 0; font-weight: 600; }
+.stat .num   { font-size: 24px; font-weight: 700; margin: 2px 0 0; font-family: 'Fraunces', serif; }
+
+.salir-btn, #link-admin {
+  align-self: center; font-family: inherit; font-weight: 600; font-size: 13px;
+  border-radius: 10px; padding: 9px 15px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--muted);
+  transition: border-color .15s, color .15s; text-decoration: none;
+}
+.salir-btn:hover { border-color: var(--brand); color: var(--brand); }
+#link-admin { border-color: var(--brand); color: var(--brand); }
+#link-admin:hover { background: var(--brand-tint); }
+
+.contenedor { max-width: 920px; margin: 0 auto; }
+
+/* ---- Tarjeta de franja ---- */
+.franja {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  animation: subir .4s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes subir {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.franja-cabecera {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+.franja-hora  { font-size: 20px; font-weight: 700; margin: 0; font-family: 'Fraunces', serif; }
+.franja-libre { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+
+/* Barra de capacidad */
+.barra {
+  flex: 1; min-width: 120px; max-width: 200px; height: 10px;
+  border-radius: 6px; background: var(--line); overflow: hidden;
+}
+.barra > span {
+  display: block; height: 100%; background: var(--ok);
+  border-radius: 6px; transition: width .4s cubic-bezier(.2,.7,.2,1), background .3s;
+}
+.barra.llena > span { background: var(--danger); }
+
+.controles { display: flex; gap: 8px; }
+
+/* ---- Botones ---- */
+.boton {
+  font-family: inherit; font-size: 13.5px; font-weight: 600;
+  padding: 9px 15px; border-radius: 10px;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+  cursor: pointer; transition: border-color .15s, background .15s, transform .1s;
+}
+.boton:hover  { border-color: var(--brand); background: var(--brand-tint); }
+.boton:active { transform: scale(.97); }
+.boton.abierta { border-color: var(--ok); color: var(--ok); }
+.boton.cerrada { border-color: var(--line); color: var(--muted); }
+
+/* ---- Pedidos ---- */
+.pedidos { margin-top: 16px; }
+.pedido {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; padding: 14px 16px;
+  border: 1.5px solid var(--line); border-radius: 14px; margin-bottom: 10px;
+  background: #fdfbf8; transition: border-color .15s;
+}
+.pedido:hover { border-color: #ddd5c8; }
+.pedido-info  { font-size: 15px; line-height: 1.5; }
+.pedido-id    { font-weight: 700; font-family: 'Fraunces', serif; }
+.pedido-pts   { color: var(--muted); font-size: 13px; }
+.pedido-acciones { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* Pills de estado */
+.pill {
+  font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 999px;
+  white-space: nowrap;
+}
+.pill.pendiente { background: var(--brand-tint); color: var(--brand-dark); }
+.pill.en_cocina { background: var(--warn-tint); color: var(--warn); }
+.pill.listo     { background: var(--ok-tint); color: var(--ok); }
+
+.vacio {
+  font-size: 14px; color: var(--muted); text-align: center; margin: 14px 0 0;
+}
+
+.cargando {
+  text-align: center; color: var(--muted); padding: 50px 0; font-size: 15px;
+}

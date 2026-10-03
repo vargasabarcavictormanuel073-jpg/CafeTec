@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cafetería · Administración</title>
+  <link rel="stylesheet" href="admin-estilos.css" />
+</head>
+<body>
+  <div class="contenedor">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <p class="titulo">Administración de la cafetería</p>
+      <div style="display:flex;gap:8px;">
+        <a href="cocina.html" style="text-decoration:none;color:#d6562b;border:1.5px solid #d6562b;align-self:center;background:#fff;">Ver cocina</a>
+        <button onclick="cerrarSesion()" style="background:#fff;border:1.5px solid #ece7df;color:#8a8378;cursor:pointer;">Salir</button>
+      </div>
+    </div>
+    <p class="subtitulo" id="fecha">Cargando…</p>
+
+    <!-- ===== RESUMEN DEL DÍA ===== -->
+    <p class="seccion">Resumen</p>
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
+        <label style="font-size:13px; font-weight:600;">Día:</label>
+        <input type="date" id="resumen-fecha"
+          style="padding:9px 12px; border:1.5px solid #ece7df; border-radius:11px; font-family:inherit; font-size:14px; background:#fdfbf8;" />
+      </div>
+
+      <!-- Tarjetas de números -->
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;">
+        <div style="flex:1; min-width:120px; background:#fdfbf8; border:1px solid #ece7df; border-radius:14px; padding:16px;">
+          <div style="font-size:13px; color:#8a8378; font-weight:600;">Pedidos</div>
+          <div id="r-pedidos" style="font-size:28px; font-weight:700; font-family:'Fraunces',serif;">0</div>
+        </div>
+        <div style="flex:1; min-width:120px; background:#fdfbf8; border:1px solid #ece7df; border-radius:14px; padding:16px;">
+          <div style="font-size:13px; color:#8a8378; font-weight:600;">Vendido</div>
+          <div id="r-dinero" style="font-size:28px; font-weight:700; font-family:'Fraunces',serif; color:#d6562b;">$0</div>
+        </div>
+        <div style="flex:1; min-width:120px; background:#fdfbf8; border:1px solid #ece7df; border-radius:14px; padding:16px;">
+          <div style="font-size:13px; color:#8a8378; font-weight:600;">Recogidos</div>
+          <div id="r-recogidos" style="font-size:28px; font-weight:700; font-family:'Fraunces',serif; color:#2f7d4f;">0</div>
+        </div>
+      </div>
+
+      <!-- Platillos más pedidos -->
+      <div style="font-size:13px; font-weight:600; color:#8a8378; margin-bottom:8px;">Más pedidos</div>
+      <div id="r-top"><p class="vacio">Sin datos para este día.</p></div>
+    </div>
+
+    <!-- ===== HORARIO DE ATENCIÓN ===== -->
+    <p class="seccion">Horario de atención</p>
+    <div class="card">
+      <div id="aviso-horario"></div>
+
+      <!-- Modo VISTA: muestra el horario fijo -->
+      <div id="horario-vista" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div>
+          <div style="font-size:22px; font-weight:700; font-family:'Fraunces',serif;">
+            <span id="v-apertura">--:--</span> <span style="color:#8a8378; font-weight:400;">a</span> <span id="v-cierre">--:--</span>
+          </div>
+          <div style="font-size:13px; color:#8a8378; margin-top:4px;" id="horario-sub">
+            Los alumnos solo pueden confirmar pedidos en este horario.
+          </div>
+        </div>
+        <button class="boton" id="btn-modificar-horario" style="background:#fff; color:#d6562b; border:1.5px solid #d6562b; box-shadow:none;">Modificar</button>
+      </div>
+
+      <!-- Modo EDICIÓN: oculto hasta tocar Modificar -->
+      <div id="horario-edicion" style="display:none;">
+        <div class="fila-form" style="margin-bottom:0;">
+          <div class="campo" style="max-width:130px;">
+            <label>Apertura</label>
+            <input type="time" id="h-apertura" />
+          </div>
+          <div class="campo" style="max-width:130px;">
+            <label>Cierre</label>
+            <input type="time" id="h-cierre" />
+          </div>
+          <div class="campo" style="max-width:150px;">
+            <label>Capacidad/franja</label>
+            <input type="number" id="h-capacidad" min="1" placeholder="100" />
+          </div>
+          <button class="boton" id="btn-guardar-horario">Guardar</button>
+          <button id="btn-cancelar-horario" style="background:#fff; border:1.5px solid #ece7df; border-radius:11px; padding:11px 16px; cursor:pointer; font-family:inherit; font-size:14px; color:#8a8378;">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PLATILLOS ===== -->
+    <p class="seccion">Platillos</p>
+    <div class="card">
+      <div id="aviso-platillo"></div>
+      <div class="fila-form">
+        <div class="campo">
+          <label>Nombre</label>
+          <input type="text" id="p-nombre" placeholder="Ej. Quesadilla" />
+        </div>
+        <div class="campo" style="max-width:120px;">
+          <label>Categoría</label>
+          <select id="p-categoria" style="width:100%; padding:9px 11px; border:1.5px solid #ece7df; border-radius:11px; font-size:14px; background:#fdfbf8; font-family:inherit;">
+            <option value="Comida">Comida</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Postres">Postres</option>
+            <option value="Snacks">Snacks</option>
+          </select>
+        </div>
+        <div class="campo" style="max-width:80px;">
+          <label>Precio $</label>
+          <input type="number" id="p-precio" placeholder="35" min="0" step="0.5" />
+        </div>
+        <div class="campo" style="max-width:80px;">
+          <label>Puntos</label>
+          <input type="number" id="p-puntos" placeholder="5" min="1" />
+        </div>
+        <button class="boton" id="btn-add-platillo">Agregar</button>
+      </div>
+      <div id="lista-platillos"><p class="vacio">Cargando…</p></div>
+    </div>
+
+    <!-- ===== FRANJAS ===== -->
+    <p class="seccion">Franjas de hoy</p>
+    <div class="card">
+      <div id="aviso-franja"></div>
+      <div class="fila-form">
+        <div class="campo" style="max-width:130px;">
+          <label>Hora de inicio</label>
+          <input type="time" id="f-inicio" />
+        </div>
+        <div class="campo" style="max-width:120px;">
+          <label>Capacidad (pts)</label>
+          <input type="number" id="f-capacidad" placeholder="100" min="1" />
+        </div>
+        <button class="boton" id="btn-add-franja">Crear franja</button>
+      </div>
+      <div id="lista-franjas"><p class="vacio">Cargando…</p></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="comun.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

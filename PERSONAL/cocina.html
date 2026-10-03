@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cocina · Cafetería</title>
+  <link rel="stylesheet" href="cocina-estilos.css" />
+</head>
+<body>
+
+  <div class="encabezado">
+    <div>
+      <p class="titulo">Cocina · pedidos de hoy</p>
+      <p class="subtitulo" id="fecha">Cargando…</p>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <p class="label">En cocina</p>
+        <p class="num" id="stat-cocina">0</p>
+      </div>
+      <div class="stat">
+        <p class="label">Listos</p>
+        <p class="num" id="stat-listos">0</p>
+      </div>
+      <a id="link-admin" href="admin.html"
+         style="display:none;text-decoration:none;color:#185fa5;font-size:13px;align-self:center;border:1px solid #185fa5;border-radius:8px;padding:8px 14px;">
+        ← Administración
+      </a>
+      <button class="salir-btn" onclick="cerrarSesion()"
+              style="background:none;border:1px solid #c4c2b8;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;align-self:center;">
+        Salir
+      </button>
+    </div>
+  </div>
+
+  <div class="contenedor" id="franjas">
+    <p class="cargando">Verificando acceso…</p>
+  </div>
+
+  <div class="contenedor" id="bloqueados-cont" style="display:none; margin-top:20px;">
+    <h3 style="font-size:16px; font-weight:600; margin:0 0 10px;">Alumnos bloqueados</h3>
+    <div id="bloqueados"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="comun.js"></script>
+  <script src="cocina.js"></script>
+
+</body>
+</html>

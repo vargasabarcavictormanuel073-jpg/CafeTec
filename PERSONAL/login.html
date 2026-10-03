@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cafetería · Acceso del personal</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body>
+  <div class="login-wrap">
+    <p class="titulo">Cafetería</p>
+    <p class="sub">Acceso del personal</p>
+
+    <div class="card" id="caja">
+      <div id="aviso"></div>
+      <div class="campo">
+        <label>Correo</label>
+        <input type="email" id="correo" placeholder="correo@ejemplo.com" />
+      </div>
+      <div class="campo">
+        <label>Contraseña</label>
+        <input type="password" id="clave" placeholder="••••••••" />
+      </div>
+      <button class="boton" id="btn-entrar">Entrar</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="comun.js"></script>
+  <script>
+    function aviso(texto, tipo) {
+      document.getElementById('aviso').innerHTML =
+        texto ? `<div class="aviso ${tipo}">${texto}</div>` : '';
+    }
+
+    // Manda a cada quien segun su rol.
+    function redirigir(rol) {
+      if (rol === 'admin')  window.location.href = 'admin.html';
+      else if (rol === 'cocina') window.location.href = 'cocina.html';
+      else {
+        // alumno o pendiente no entran por aqui.
+        aviso('Esta entrada es solo para el personal de la cafetería.', 'error');
+      }
+    }
+
+    document.getElementById('btn-entrar').addEventListener('click', async () => {
+      const correo = document.getElementById('correo').value.trim();
+      const clave  = document.getElementById('clave').value;
+      if (!correo || !clave) { aviso('Llena correo y contraseña.', 'error'); return; }
+
+      const { error } = await db.auth.signInWithPassword({ email: correo, password: clave });
+      if (error) { aviso(error.message, 'error'); return; }
+
+      const rol = await obtenerRol();
+      redirigir(rol);
+    });
+
+    // Si ya hay sesion abierta, redirige directo.
+    (async () => {
+      const rol = await obtenerRol();
+      if (rol === 'admin' || rol === 'cocina') redirigir(rol);
+    })();
+  </script>
+</body>
+</html>
