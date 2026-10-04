@@ -92,6 +92,10 @@ body {
 .campo input:focus, .campo select:focus {
   outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-tint);
 }
+.campo-imagen { min-width:200px; }
+.campo-imagen input { padding:8px; background:#fff; }
+.platillo-miniatura { width:64px; height:64px; object-fit:cover; border-radius:12px; border:1px solid var(--line); background:#edf3f9; flex:0 0 auto; }
+.platillo-sin-foto { display:grid; place-items:center; color:var(--muted); font-size:10px; text-align:center; }
 
 .boton {
   font-family: inherit; font-size: 14px; font-weight: 600;

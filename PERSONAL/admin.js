@@ -36,6 +36,35 @@ function esc(valor) {
 document.getElementById('fecha').textContent =
   new Date().toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
 
+function validarImagenPlatillo(archivo) {
+  if (!archivo) return true;
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type)) {
+    aviso('aviso-platillo', 'La foto debe ser JPG, PNG o WebP.', 'error');
+    return false;
+  }
+  if (archivo.size > 5 * 1024 * 1024) {
+    aviso('aviso-platillo', 'La foto no puede superar 5 MB.', 'error');
+    return false;
+  }
+  return true;
+}
+
+function urlImagenPlatillo(ruta) {
+  if (!ruta) return '';
+  return db.storage.from('platillos').getPublicUrl(ruta).data.publicUrl;
+}
+
+async function subirImagenPlatillo(platilloId, archivo) {
+  if (!archivo) return null;
+  const extension = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp' }[archivo.type];
+  const ruta = `${platilloId}/${Date.now()}.${extension}`;
+  const { error } = await db.storage.from('platillos').upload(ruta, archivo, {
+    cacheControl: '3600', contentType: archivo.type, upsert: false
+  });
+  if (error) throw error;
+  return ruta;
+}
+
 
 // --- PLATILLOS --------------------------------------------------------
 
@@ -45,19 +74,37 @@ document.getElementById('btn-add-platillo').addEventListener('click', async () =
   const categoria = document.getElementById('p-categoria').value;
   const precio = parseFloat(document.getElementById('p-precio').value);
   const puntos = parseInt(document.getElementById('p-puntos').value);
+  const imagen = document.getElementById('p-imagen').files[0];
 
   if (!nombre || isNaN(precio) || isNaN(puntos) || precio <= 0 || puntos <= 0) {
     aviso('aviso-platillo', 'Llena nombre, precio y puntos con valores válidos.', 'error');
     return;
   }
+  if (!validarImagenPlatillo(imagen)) return;
 
-  const { error } = await db.from('platillos').insert({ nombre, precio, puntos, categoria });
+  const { data: nuevo, error } = await db.from('platillos')
+    .insert({ nombre, precio, puntos, categoria })
+    .select('id')
+    .single();
   if (error) { aviso('aviso-platillo', error.message, 'error'); return; }
+
+  if (imagen) {
+    try {
+      const imagen_path = await subirImagenPlatillo(nuevo.id, imagen);
+      const { error: errorFoto } = await db.from('platillos').update({ imagen_path }).eq('id', nuevo.id);
+      if (errorFoto) throw errorFoto;
+    } catch (e) {
+      aviso('aviso-platillo', `Platillo agregado, pero la foto no se guardó: ${e.message}`, 'error');
+      cargarPlatillos();
+      return;
+    }
+  }
 
   aviso('aviso-platillo', 'Platillo agregado.', 'ok');
   document.getElementById('p-nombre').value = '';
   document.getElementById('p-precio').value = '';
   document.getElementById('p-puntos').value = '';
+  document.getElementById('p-imagen').value = '';
   cargarPlatillos();
 });
 
@@ -95,7 +142,11 @@ async function cargarPlatillos() {
 function dibujarItemPlatillo(p, on) {
   const div = document.createElement('div');
   div.className = 'item';
+  const foto = urlImagenPlatillo(p.imagen_path);
   div.innerHTML = `
+    ${foto
+      ? `<img class="platillo-miniatura" src="${esc(foto)}" alt="${esc(p.nombre)}" />`
+      : '<div class="platillo-miniatura platillo-sin-foto">Sin foto</div>'}
     <div style="flex:1;">
       <div class="nom">${esc(p.nombre)}</div>
       <div class="det">${esc(p.categoria || 'Comida')} · $${Number(p.precio).toFixed(2)} · ${Number(p.puntos)} pts</div>
@@ -137,6 +188,8 @@ function convertirAEdicion(p, div, on) {
         style="width:80px; padding:8px 10px; border:1.5px solid #ece7df; border-radius:9px; font-family:inherit; font-size:14px;" />
       <input id="e-puntos" type="number" value="${p.puntos}" min="1"
         style="width:70px; padding:8px 10px; border:1.5px solid #ece7df; border-radius:9px; font-family:inherit; font-size:14px;" />
+      <input id="e-imagen" type="file" accept="image/jpeg,image/png,image/webp"
+        title="Cambiar foto" style="max-width:190px; font-size:12px;" />
     </div>
     <div style="display:flex; gap:8px; margin-left:10px;">
       <button data-guardar class="boton" style="padding:8px 14px;">Guardar</button>
@@ -156,18 +209,33 @@ async function guardarEdicion(p, div) {
   const categoria = div.querySelector('#e-categoria').value;
   const precio    = parseFloat(div.querySelector('#e-precio').value);
   const puntos    = parseInt(div.querySelector('#e-puntos').value);
+  const imagen    = div.querySelector('#e-imagen').files[0];
 
   if (!nombre || isNaN(precio) || isNaN(puntos) || precio <= 0 || puntos <= 0) {
     aviso('aviso-platillo', 'Revisa los valores antes de guardar.', 'error');
     return;
   }
+  if (!validarImagenPlatillo(imagen)) return;
+
+  let imagen_path = p.imagen_path || null;
+  if (imagen) {
+    try {
+      imagen_path = await subirImagenPlatillo(p.id, imagen);
+    } catch (e) {
+      aviso('aviso-platillo', 'No se pudo subir la nueva foto: ' + e.message, 'error');
+      return;
+    }
+  }
 
   const { error } = await db
     .from('platillos')
-    .update({ nombre, categoria, precio, puntos })
+    .update({ nombre, categoria, precio, puntos, imagen_path })
     .eq('id', p.id);
 
   if (error) { aviso('aviso-platillo', error.message, 'error'); return; }
+  if (imagen && p.imagen_path && p.imagen_path !== imagen_path) {
+    await db.storage.from('platillos').remove([p.imagen_path]);
+  }
   aviso('aviso-platillo', 'Platillo actualizado.', 'ok');
   cargarPlatillos();
 }
@@ -186,6 +254,7 @@ async function eliminarPlatillo(p) {
       `Mejor desactívalo con el interruptor para sacarlo del menú.`, 'error');
     return;
   }
+  if (p.imagen_path) await db.storage.from('platillos').remove([p.imagen_path]);
   aviso('aviso-platillo', 'Platillo eliminado.', 'ok');
   cargarPlatillos();
 }

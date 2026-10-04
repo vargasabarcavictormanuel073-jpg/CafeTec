@@ -122,6 +122,10 @@ body {
 .platillo:first-child { padding-top: 4px; }
 .platillo-info .nom { font-size: 16px; font-weight: 600; }
 .platillo-info .det { font-size: 14px; color: var(--brand); font-weight: 600; margin-top: 2px; }
+.platillo-principal { display:flex; align-items:center; gap:12px; }
+.platillo-info { flex:1; min-width:0; }
+.platillo-foto { width:76px; height:64px; object-fit:cover; border-radius:13px; border:1px solid var(--line); background:#edf3f9; flex:0 0 auto; }
+.platillo-foto-vacia { display:grid; place-items:center; color:var(--brand); font-size:11px; font-weight:700; }
 
 .cantidad { display: flex; align-items: center; gap: 6px; }
 .cantidad button {

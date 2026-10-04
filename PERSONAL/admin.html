@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cafetería · Administración</title>
-  <link rel="stylesheet" href="admin-estilos.css?v=20261003-menu" />
+  <link rel="stylesheet" href="admin-estilos.css?v=20261003-fotos" />
 </head>
 <body>
   <div class="admin-layout">
@@ -150,6 +150,10 @@
           <label>Puntos</label>
           <input type="number" id="p-puntos" placeholder="5" min="1" />
         </div>
+        <div class="campo campo-imagen">
+          <label>Foto del platillo</label>
+          <input type="file" id="p-imagen" accept="image/jpeg,image/png,image/webp" />
+        </div>
         <button class="boton" id="btn-add-platillo">Agregar</button>
       </div>
       <div id="lista-platillos"><p class="vacio">Cargando…</p></div>
@@ -188,6 +192,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="comun.js"></script>
-  <script src="admin.js"></script>
+  <script src="admin.js?v=20261003-fotos"></script>
 </body>
 </html>

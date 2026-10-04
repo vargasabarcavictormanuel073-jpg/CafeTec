@@ -316,7 +316,7 @@ async function cargarMenu() {
   // Traemos los platillos ACTIVOS hoy, ahora tambien con su categoria.
   const { data, error } = await db
     .from('disponibilidad_dia')
-    .select('activo, platillos ( id, nombre, precio, puntos, categoria )')
+    .select('activo, platillos ( id, nombre, precio, puntos, categoria, imagen_path )')
     .eq('fecha', HOY)
     .eq('activo', true);
 
@@ -394,10 +394,16 @@ function dibujarPlatillos() {
 
   for (const p of lista) {
     const cant = carrito[p.id] ? carrito[p.id].cant : 0;
+    const foto = p.imagen_path
+      ? db.storage.from('platillos').getPublicUrl(p.imagen_path).data.publicUrl
+      : '';
     const div = document.createElement('div');
     div.className = 'platillo';
     div.innerHTML = `
-      <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div class="platillo-principal">
+        ${foto
+          ? `<img class="platillo-foto" src="${esc(foto)}" alt="${esc(p.nombre)}" loading="lazy" />`
+          : '<div class="platillo-foto platillo-foto-vacia">CafeTec</div>'}
         <div class="platillo-info">
           <div class="nom">${esc(p.nombre)}</div>
           <div class="det">$${Number(p.precio).toFixed(2)}</div>
