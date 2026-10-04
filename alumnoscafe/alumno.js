@@ -323,7 +323,18 @@ async function cargarMenu() {
   const cont = document.getElementById('lista-platillos');
 
   if (error) { cont.textContent = 'Error: ' + error.message; return; }
-  if (!data || data.length === 0) { cont.textContent = 'Hoy no hay platillos disponibles.'; return; }
+  if (!data || data.length === 0) {
+    cont.innerHTML = `
+      <div class="menu-vacio">
+        <div class="menu-vacio-logo">
+          <img src="../assets/cafetec-logo.png?v=20261003-blue" alt="CafeTec" />
+        </div>
+        <h2>Estamos preparando el menú</h2>
+        <p>En cuanto la cafetería publique los platillos de hoy aparecerán aquí con su foto y precio.</p>
+        <span class="menu-vacio-etiqueta">Vuelve a revisar en unos minutos</span>
+      </div>`;
+    return;
+  }
 
   // Guardar en memoria los platillos (para poder filtrar sin reconsultar).
   menuPlatillos = data.map(f => f.platillos).filter(Boolean);

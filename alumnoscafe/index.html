@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cafetería · Pedir</title>
-  <link rel="stylesheet" href="estilos.css?v=20261003-fotos" />
+  <link rel="stylesheet" href="estilos.css?v=20261003-menuvisual" />
 </head>
 <body>
   <div class="contenedor">
@@ -77,18 +77,23 @@
 
     <!-- ====== VISTA 2: MENU ====== -->
     <div id="vista-menu" class="oculto">
-      <div class="barra-top">
-        <div>
+      <section class="menu-hero">
+        <div class="menu-logo-wrap">
+          <img src="../assets/cafetec-logo.png?v=20261003-blue" alt="CafeTec · Tecnológico Nacional de México" />
+        </div>
+        <div class="menu-hero-contenido">
+          <span class="menu-kicker">MENÚ DIGITAL</span>
           <p class="titulo">Menú de hoy</p>
           <p class="quien" id="quien"></p>
         </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button class="salir" id="btn-mis-pedidos">Mis pedidos</button>
-          <button class="salir" id="btn-salir">Salir</button>
+        <div class="menu-acciones">
+          <button class="menu-accion" id="btn-mis-pedidos">Mis pedidos</button>
+          <button class="menu-accion secundaria" id="btn-salir">Salir</button>
         </div>
-      </div>
+        <div class="menu-promesa"><span></span>Pide con anticipación y recoge sin hacer fila</div>
+      </section>
 
-      <div class="card">
+      <div class="card menu-card">
         <div id="lista-platillos">Cargando menú…</div>
       </div>
 
@@ -182,6 +187,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="alumno.js?v=20261003-fotos"></script>
+  <script src="alumno.js?v=20261003-menuvisual"></script>
 </body>
 </html>
