@@ -61,15 +61,15 @@ document.getElementById('btn-modo').addEventListener('click', () => {
   const campoCorreo = document.getElementById('correo');
   document.getElementById('correo-label').textContent = modoRegistro
     ? 'Correo institucional completo'
-    : 'Número de control o correo institucional';
+    : 'Usuario, número de control o correo';
   document.getElementById('correo-ayuda').textContent = modoRegistro
     ? 'Usa el correo @costagrande.tecnm.mx asociado a tu matrícula.'
-    : 'Si escribes solo tu número, completaremos el correo automáticamente.';
+    : 'Los alumnos pueden usar su número de control y los administradores su usuario.';
   campoCorreo.type = modoRegistro ? 'email' : 'text';
   campoCorreo.autocomplete = modoRegistro ? 'email' : 'username';
   campoCorreo.placeholder = modoRegistro
     ? 'L00000000@costagrande.tecnm.mx'
-    : 'L00000000 o correo completo';
+    : 'Usuario, matrícula o correo completo';
   aviso('aviso-login', '', '');
 });
 
@@ -129,13 +129,13 @@ document.getElementById('btn-entrar').addEventListener('click', async () => {
   const clave  = document.getElementById('clave').value;
 
   if (!identificador || !clave) {
-    aviso('aviso-login', 'Escribe tu número de control o correo y tu contraseña.', 'error');
+    aviso('aviso-login', 'Escribe tu usuario, número de control o correo y tu contraseña.', 'error');
     return;
   }
   if (!correo) {
     aviso('aviso-login', modoRegistro
       ? 'Escribe tu correo institucional completo @costagrande.tecnm.mx.'
-      : 'Escribe un número de control válido o tu correo institucional completo.', 'error');
+      : 'Escribe un usuario, número de control o correo institucional válido.', 'error');
     return;
   }
 
@@ -234,11 +234,16 @@ async function iniciarSesion() {
   }
 
   perfilActual = perfil;
-  if (perfil && perfil.rol && perfil.rol !== 'alumno') {
+  if (perfil && perfil.rol === 'admin') {
+    window.location.replace('../PERSONAL/admin.html');
+    return;
+  }
+
+  if (perfil && perfil.rol === 'cocina') {
     await db.auth.signOut();
     usuario = null;
     verVista('login');
-    aviso('aviso-login', 'Esta entrada es exclusiva para estudiantes. El personal debe usar su acceso.', 'error');
+    aviso('aviso-login', 'La cuenta de cafetería debe entrar desde su tablero separado.', 'error');
     return;
   }
 
