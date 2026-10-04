@@ -74,12 +74,13 @@ document.getElementById('btn-modo').addEventListener('click', () => {
 });
 
 function normalizarCorreoAcceso(valor, esRegistro) {
-  const identificador = String(valor || '').trim().toLowerCase();
+  let identificador = String(valor || '').trim().toLowerCase();
   if (!identificador) return null;
   if (identificador.includes('@')) {
     return identificador.endsWith('@costagrande.tecnm.mx') ? identificador : null;
   }
   if (esRegistro || !/^[a-z0-9]{6,20}$/.test(identificador)) return null;
+  if (identificador === 'uisesmarino') identificador = 'ulisesmarino';
   return `${identificador}@costagrande.tecnm.mx`;
 }
 

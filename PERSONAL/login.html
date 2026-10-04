@@ -49,9 +49,11 @@
       const clave  = document.getElementById('clave').value;
       if (!identificador || !clave) { aviso('Escribe tu usuario y contraseña.', 'error'); return; }
 
+      let usuarioNormalizado = identificador.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      if (usuarioNormalizado === 'uisesmarino') usuarioNormalizado = 'ulisesmarino';
       const correo = identificador.includes('@')
         ? identificador.toLowerCase()
-        : `${identificador.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}@costagrande.tecnm.mx`;
+        : `${usuarioNormalizado}@costagrande.tecnm.mx`;
 
       const { error } = await db.auth.signInWithPassword({ email: correo, password: clave });
       if (error) { aviso('Usuario o contraseña incorrectos.', 'error'); return; }
